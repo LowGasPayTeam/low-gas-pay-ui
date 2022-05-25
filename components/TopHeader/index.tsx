@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useAccount, useConnect, useEnsName } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -11,7 +11,6 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import styled from "@emotion/styled";
 
@@ -35,11 +34,11 @@ const summaryAddress = (addr: string) => addr ? `${addr.slice(0,2)}...${addr.sli
 
 const TopHeader: FC<any> = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-  const { data } = useAccount()
+  const { data: account } = useAccount();
+  const { data: ensName } = useEnsName({ address: account?.address });
   const { connect } = useConnect({
     connector: new InjectedConnector(),
   })
-  const { disconnect } = useDisconnect()
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -139,14 +138,14 @@ const TopHeader: FC<any> = () => {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            { data ? (
+            { account ? (
               <Typography
                 variant="body2"
                 sx={{
                   fontFamily: '"Inter var", sans-serif',
                 }}>
                   <GreenDotted />
-                  { summaryAddress(data.address ?? '') }
+                  { ensName ?? summaryAddress(account.address ?? '') }
               </Typography>
             ) : (
               <TextButton onClick={() => connect()} sx={{ my: 2, color: "white", display: "block" }}> 
