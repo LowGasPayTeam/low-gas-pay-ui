@@ -1,9 +1,13 @@
+import styled from '@emotion/styled';
 import type { NextPage } from 'next'
 import Head from 'next/head'
 
+const MainWrap = styled('div')({
+  minHeight: 'calc(100vh)'
+});
 const Home: NextPage = () => {
   return (
-    <div>
+    <MainWrap>
       <Head>
         <title>Low Gas Fee</title>
         <meta name="description" content="Low Gas Fee" />
@@ -12,7 +16,7 @@ const Home: NextPage = () => {
 
       <main>
       </main>
-    </div>
+    </MainWrap>
   )
 }
 
