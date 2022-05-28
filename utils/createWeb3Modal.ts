@@ -21,7 +21,7 @@ const providerOptions = {
     options: {
       appName: 'Coinbase', // Your app name
       networkUrl: `https://mainnet.infura.io/v3/${INFURA_ID}`,
-      chainId: 1,
+      chainId: 4,
     },
     package: WalletLink,
     connector: async (_: any, options: any) => {
@@ -38,7 +38,6 @@ const providerOptions = {
 
 export const createWeb3Modal = () => {
   return new Web3Modal({
-    network: "mainnet", // optional
     cacheProvider: true, // optional
     providerOptions // required
   });

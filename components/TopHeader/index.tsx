@@ -12,7 +12,9 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import styled from "@emotion/styled";
 import { createWeb3Modal } from '../../utils/createWeb3Modal';
-import { reducer, initialState } from "../../redux";
+import { useDispatch, useSelector } from "react-redux";
+import { WalletStateType } from "../../redux";
+
 const pages = ["Token", "NFT"];
 
 const TextButton = styled(Button)({
@@ -35,8 +37,9 @@ const summaryAddress = (addr: string) => addr ? `${addr.slice(0,2)}...${addr.sli
 const TopHeader: FC<any> = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const web3Modal = useRef<any>();
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { connection, provider, address, chainId } = state;
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state );
+  const { connection, provider, address, chainId } = state as WalletStateType;
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -46,17 +49,14 @@ const TopHeader: FC<any> = () => {
     setAnchorElNav(null);
   };
 
-  const handleWalletPickerClosed = () => {
-  }
-
   const connectWallet = useCallback(async () => {
     try {
-      console.log(web3Modal);
       const connection = await web3Modal.current.connect();
       const provider = new providers.Web3Provider(connection);
       const signer = provider.getSigner();
       const address = await signer.getAddress();
       const network = await provider.getNetwork();
+      console.log(network);
       dispatch({
         type: 'SET_WEB3_PROVIDER',
         connection,
@@ -78,7 +78,7 @@ const TopHeader: FC<any> = () => {
     dispatch({
       type: 'RESET_WEB3_PROVIDER',
     })
-  }, [provider]);
+  }, [provider, dispatch]);
 
   useEffect(() => {
     if (!web3Modal.current) {
@@ -124,7 +124,7 @@ const TopHeader: FC<any> = () => {
         }
       }
     }
-  }, [connection, disconnect]);
+  }, [connection, disconnect, dispatch]);
 
   return (
     <AppBar position="static">

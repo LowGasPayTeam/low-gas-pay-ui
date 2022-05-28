@@ -1,38 +1,43 @@
-type StateType = {
+import { createStore, applyMiddleware, Reducer } from "redux";
+import { createWrapper } from "next-redux-wrapper";
+
+export type WalletStateType = {
   connection?: any
   provider?: any
   address?: string
   chainId?: number
 }
 
-type ActionType =
+type WalletActionType =
   | {
       type: 'SET_WEB3_PROVIDER'
-      connection?: StateType['provider']
-      provider?: StateType['provider']
-      address?: StateType['address']
-      chainId?: StateType['chainId']
+      connection?: WalletStateType['provider']
+      provider?: WalletStateType['provider']
+      address?: WalletStateType['address']
+      chainId?: WalletStateType['chainId']
     }
   | {
       type: 'SET_ADDRESS'
-      address?: StateType['address']
+      address?: WalletStateType['address']
     }
   | {
       type: 'SET_CHAIN_ID'
-      chainId?: StateType['chainId']
+      chainId?: WalletStateType['chainId']
     }
   | {
       type: 'RESET_WEB3_PROVIDER'
     }
 
-export const initialState: StateType = {
+const initialState: WalletStateType = {
   connection: null,
   provider: null,
   address: undefined,
   chainId: undefined,
 }
 
-export function reducer(state: StateType, action: ActionType): StateType {
+const reducer = (
+  state: WalletStateType, action: WalletActionType
+) => {
   switch (action.type) {
     case 'SET_WEB3_PROVIDER':
       return {
@@ -53,8 +58,18 @@ export function reducer(state: StateType, action: ActionType): StateType {
         chainId: action.chainId,
       }
     case 'RESET_WEB3_PROVIDER':
-      return initialState
+      return initialState;
     default:
-      throw new Error()
+      return state;
   }
 }
+
+export const store = createStore(
+  reducer as Reducer<WalletStateType, WalletActionType>,
+  initialState,
+);
+
+// assigning store to next wrapper
+const makeStore = () => store;
+
+export const wrapper = createWrapper(makeStore);
