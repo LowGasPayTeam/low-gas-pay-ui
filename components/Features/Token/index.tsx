@@ -1,5 +1,5 @@
 import { Button, Card, Col, Container, Input, Row, styled, Table, Text } from "@nextui-org/react";
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useMemo, useRef, useState } from "react";
 import { TransferRecord } from "../../../typing";
 import AddrList from "./AddrList";
 import TransferSetting from "./TransferSetting";
@@ -15,6 +15,10 @@ const FeatureToken: FC = () => {
       { id: 0, address: 'example', amount: '' }
   ]);
 
+  const canPlaceOrder = useMemo(() => {
+    return false;
+  }, []);
+  
   const handleAmountChange = (index: number, amount: string | number) => {
     setRecords(records => {
       records[index].amount = amount?.toString();
@@ -53,6 +57,8 @@ const FeatureToken: FC = () => {
         >
           <Button
             size="md"
+            color="secondary"
+            disabled={!canPlaceOrder}
             auto
             css={{ width: "100%" }}
             onPress={handlePlaceOrder}

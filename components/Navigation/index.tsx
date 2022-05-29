@@ -1,7 +1,8 @@
 import { WalletStateType } from "../../redux";
 import { FC, useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { providers } from "ethers";
-import { Button, Col, Container, Row, Text, styled, Card } from "@nextui-org/react";
+import { Button, Container, Row, Text, styled, Card, Switch, useTheme, SwitchEvent } from "@nextui-org/react";
+import { useTheme as useNextTheme } from 'next-themes';
 import { createWeb3Modal } from '../../utils/createWeb3Modal';
 import { useDispatch, useSelector } from "react-redux";
 import { summaryAddress } from '../../utils';
@@ -10,7 +11,7 @@ import { NETWORKING } from '../../constants';
 
 const LogoContainer = styled('div', {
   width: 'auto',
-})
+});
 const LogoTitle = styled(Text, {
   fontSize: '20px',
   fontWeight: 'normal',
@@ -29,14 +30,19 @@ const AddressText = styled('span', {
 
 const Navigation: FC = () => {
   const web3Modal = useRef<any>();
+  const { setTheme } = useNextTheme();
+  const { isDark, type } = useTheme();
   const dispatch = useDispatch();
   const state = useSelector((state) => state );
-  const { connection, provider, address, chainId } = state as WalletStateType;
-  const { data, isError, isLoading } = useBalance({
+  const { connection, provider, address } = state as WalletStateType;
+  const { data } = useBalance({
     addressOrName: address,
     chainId: NETWORKING.CHAIN_ID,
   });
 
+  const switchTheme = (e: SwitchEvent) => {
+    setTheme(e.target.checked ? 'dark' : 'light')
+  }
   const connectWallet = useCallback(async () => {
     try {
       const connection = await web3Modal.current.connect();
@@ -44,13 +50,13 @@ const Navigation: FC = () => {
       const signer = provider.getSigner();
       const address = await signer.getAddress();
       const network = await provider.getNetwork();
-      console.log(network);
       dispatch({
         type: 'SET_WEB3_PROVIDER',
         connection,
         provider,
         address,
         chainId: network.chainId,
+        signer,
       });
     } catch(err) {
       console.log(err);
@@ -120,10 +126,10 @@ const Navigation: FC = () => {
         <LogoContainer>
           <LogoTitle h1>Low Gas Pay</LogoTitle>
         </LogoContainer>
-        <div>
+        <Row fluid={false} css={{ alignItems: 'center' }}>
           {
             address ? (
-              <Card bordered shadow={false} css={{ padding: '$1' }}>
+              <Card bordered shadow={false} css={{ padding: '$1', mr: '$8' }}>
                 <Card.Body css={{ padding: "$0" }}>
                   <Row>
                     <Text span css={{ minWidth: '50px', padding: '$2 $6' }}>
@@ -135,9 +141,13 @@ const Navigation: FC = () => {
                   </Row>
                 </Card.Body>
               </Card>
-            ) : <Button onClick={connectWallet}>链接钱包</Button>
+            ) : <Button onPress={connectWallet}>链接钱包</Button>
           }
-        </div>
+          <Switch
+            checked={isDark}
+            onChange={switchTheme}
+          />
+        </Row>
       </Row>
     </NavigationWrap>
   )

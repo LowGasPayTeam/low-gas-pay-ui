@@ -6,6 +6,7 @@ export type WalletStateType = {
   provider?: any
   address?: string
   chainId?: number
+  signer?: any
 }
 
 type WalletActionType =
@@ -15,6 +16,7 @@ type WalletActionType =
       provider?: WalletStateType['provider']
       address?: WalletStateType['address']
       chainId?: WalletStateType['chainId']
+      signer?: WalletStateType['signer']
     }
   | {
       type: 'SET_ADDRESS'
@@ -25,6 +27,10 @@ type WalletActionType =
       chainId?: WalletStateType['chainId']
     }
   | {
+      type: 'SET_SIGNER'
+      chainId?: WalletStateType['signer']
+    }
+  | {
       type: 'RESET_WEB3_PROVIDER'
     }
 
@@ -33,6 +39,7 @@ const initialState: WalletStateType = {
   provider: null,
   address: undefined,
   chainId: undefined,
+  signer: null,
 }
 
 const reducer = (
@@ -46,6 +53,7 @@ const reducer = (
         provider: action.provider,
         address: action.address,
         chainId: action.chainId,
+        signer: action.signer
       }
     case 'SET_ADDRESS':
       return {

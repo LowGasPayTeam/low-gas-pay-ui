@@ -93,7 +93,7 @@ const AddrList: React.FC<PropTypes> = ({
           {data.map((record: TransferRecord, index) => (
             <Table.Row key={record.id}>
               <Table.Cell>
-                <Text size={14} css={{ minWidth: "200px" }}>
+                <Text size={14} css={{ minWidth: "319px" }}>
                   {record.address}
                 </Text>
               </Table.Cell>

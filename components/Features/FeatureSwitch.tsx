@@ -16,19 +16,19 @@ const FeatureSwitch: FC<PropTypes> = ({ active, onChange }) => {
       <Button.Group>
         <Button
           disabled={active === "Token"}
-          onClick={() => handleTabClick("Token")}
+          onPress={() => handleTabClick("Token")}
         >
           Token
         </Button>
         <Button
           disabled={active === "NFT"}
-          onClick={() => handleTabClick("NFT")}
+          onPress={() => handleTabClick("NFT")}
         >
           NFT
         </Button>
         <Button
           disabled={active === "Order"}
-          onClick={() => handleTabClick("Order")}
+          onPress={() => handleTabClick("Order")}
         >
           Order
         </Button>
