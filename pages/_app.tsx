@@ -1,29 +1,22 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { wrapper, store } from "../redux";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import TopHeader from '../components/TopHeader';
+import { NextUIProvider } from '@nextui-org/react';
 import { Provider } from 'react-redux';
 import { createClient, WagmiConfig } from 'wagmi'
+import Navigation from '../components/Navigation';
 
 const client = createClient()
-const darkTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-  },
-});
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig client={client}>
-      <ThemeProvider theme={darkTheme}>
-        <Provider store={store}>
-          <TopHeader />
+      <Provider store={store}>
+        <NextUIProvider>
+          <Navigation />
           <Component {...pageProps} />
-        </Provider>
-      </ThemeProvider>
+        </NextUIProvider>
+      </Provider>
     </WagmiConfig>
   )
 }

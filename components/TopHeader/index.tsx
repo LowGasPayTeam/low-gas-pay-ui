@@ -33,7 +33,6 @@ const GreenDotted = styled('span')({
 
 const summaryAddress = (addr: string) => addr ? `${addr.slice(0,2)}...${addr.slice(-4)}` : '';
 
-
 const TopHeader: FC<any> = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const web3Modal = useRef<any>();
