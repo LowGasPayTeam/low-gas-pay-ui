@@ -3,6 +3,7 @@ import {
   Card,
   Col,
   Input,
+  Loading,
   Row,
   Spacer,
   styled,
@@ -13,7 +14,9 @@ import {
 } from "@nextui-org/react";
 import { formatEther } from "ethers/lib/utils";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { ChevronDown } from "react-iconly";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import { TESTNET_TOKENS } from "../../../constants";
 import { WalletStateType } from "../../../redux";
 import { TransferRecord } from "../../../typing";
@@ -32,6 +35,7 @@ const TransferSetting: React.FC<PropTypes> = ({
   const [selectedToken, setSelectedToken] = useState('ETH');
   const [balance, setBalance] = useState('0');
   const [approved, setApproved] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
   const [visible, setVisible] = useState(false);
   const [isRecharge, setIsRecharge] = useState(false);
   // from redux
@@ -88,7 +92,24 @@ const TransferSetting: React.FC<PropTypes> = ({
 
   // 授权
   const handleApprove = async () => {
-    await signApprove(address || '', TESTNET_TOKENS[selectedToken], signer);
+    setIsApproving(true);
+    try {
+      const tx = await signApprove(address || '', TESTNET_TOKENS[selectedToken], signer);
+      await toast.promise(
+        tx.wait(),
+        {
+          pending: '授权已提交，正在等待确认...',
+          success: '授权成功 👌',
+          error: '授权失败 🤯'
+        }
+      )
+      setApproved(true);
+    } catch (err) {
+      toast.error("授权失败！");
+      console.log(err);
+    } finally {
+      setIsApproving(false);
+    }
   }
 
   return (
@@ -98,17 +119,27 @@ const TransferSetting: React.FC<PropTypes> = ({
       </Card.Header>
       <Row css={{ padding: '$8 $0' }}>
         <Col span={6} css={{ borderRight: '1px solid $gray100' }}>
-          <Button bordered color="secondary" onPress={openSelectModal}>
+          <Button
+            bordered 
+            color="secondary" 
+            iconRight={<ChevronDown set="bold" primaryColor="blueviolet"/>}
+            onPress={openSelectModal}
+
+          >
             {selectedToken}
           </Button>
           <Spacer y={1} />
           <Button
             size="sm"
             color="error"
-            disabled={approved}
+            disabled={approved || isApproving}
             onPress={handleApprove}
           >
-            { approved ? '已授权' : '授权' }
+            { isApproving ? (
+              <Loading type="points-opacity" color="currentColor" size="sm" />
+            ) : (
+                approved ? '已授权' : '授权'
+            )}
           </Button>
           <Spacer y={1} />
           <Text size={14}>钱包余额: { balance }</Text>

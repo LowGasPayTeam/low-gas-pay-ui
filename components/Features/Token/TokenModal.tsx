@@ -1,11 +1,8 @@
-import { Modal, Row, styled, Table, Text } from "@nextui-org/react";
+import { Loading, Modal, Row, styled, Table, Text } from "@nextui-org/react";
 import React, { FC, useEffect, useRef, useState } from "react";
-import { TransferRecord } from "../../../typing";
 import { TESTNET_TOKENS } from '../../../constants';
 import { WalletStateType } from "../../../redux";
-import { useDispatch, useSelector } from "react-redux";
-import { erc20ABI } from 'wagmi';
-import { ethers } from "ethers";
+import { useSelector } from "react-redux";
 import { formatEther } from "ethers/lib/utils";
 import { fetchBalance } from "../../../utils";
 
@@ -34,6 +31,7 @@ const TokenModal: FC<PropTypes> = ({
     onChange(keys.currentKey, balances[keys.currentKey]);
   }
 
+  // 获取代币列表的余额
   useEffect(() => {
     const fetchBalances = async () => {
       const result: any = {};
@@ -68,22 +66,18 @@ const TokenModal: FC<PropTypes> = ({
     >
       <Modal.Header>
         <Text id="modal-title" size={14}>
-          请选择要转账的 Token
+          请选择要转账的代币
         </Text>
       </Modal.Header>
       <Modal.Body css={{  padding: '$0 $8 $8'}}>
         <Table
-          aria-label="Example static collection table"
-          css={{
-            height: "auto",
-            minWidth: "100%",
-            padding: '$0'
-          }}
+          aria-label="Supported Token collection table"
+          css={{ height: "auto", minWidth: "100%", padding: '$0'}}
           lined
           headerLined
           shadow={false}
-          selectionMode="single"
           onSelectionChange={handleSelectionChange}
+          selectionMode="single"
         >
           <Table.Header>
             <Table.Column>Token</Table.Column>
@@ -94,7 +88,9 @@ const TokenModal: FC<PropTypes> = ({
               <Table.Row key={token.token}>
                 <Table.Cell>{ token.token }</Table.Cell>
                 <Table.Cell css={{ textAlign: 'right'}}>
-                  { balances[token.token] }
+                  { balances[token.token] ? balances[token.token] : (
+                    <Loading size="xs" />
+                  )}
                 </Table.Cell>
               </Table.Row>
             ))}

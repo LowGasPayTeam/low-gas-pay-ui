@@ -6,6 +6,8 @@ import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { Provider } from 'react-redux';
 import { createClient, WagmiConfig } from 'wagmi'
 import Navigation from '../components/Navigation';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 const client = createClient()
 
@@ -32,6 +34,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <NextUIProvider>
             <Navigation />
             <Component {...pageProps} />
+            <ToastContainer />
           </NextUIProvider>
         </NextThemesProvider>
       </Provider>

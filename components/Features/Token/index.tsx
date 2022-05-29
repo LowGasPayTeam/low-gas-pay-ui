@@ -12,7 +12,6 @@ const TokenSelectCard = styled(Card, {
 
 const FeatureToken: FC = () => {
   const [records, setRecords] = useState<TransferRecord[]>([
-      { id: 0, address: 'example', amount: '' }
   ]);
 
   const canPlaceOrder = useMemo(() => {

@@ -126,7 +126,10 @@ const Navigation: FC = () => {
         <LogoContainer>
           <LogoTitle h1>Low Gas Pay</LogoTitle>
         </LogoContainer>
-        <Row fluid={false} css={{ alignItems: 'center' }}>
+        <Row fluid={false} css={{ 
+          alignItems: 'center',
+          height: '40px'
+        }}>
           {
             address ? (
               <Card bordered shadow={false} css={{ padding: '$1', mr: '$8' }}>
@@ -141,7 +144,16 @@ const Navigation: FC = () => {
                   </Row>
                 </Card.Body>
               </Card>
-            ) : <Button onPress={connectWallet}>链接钱包</Button>
+            ) : (
+              <Button
+                auto
+                size="sm" 
+                onPress={connectWallet} 
+                css={{ mr: '$8' }}
+              >
+                链接钱包
+              </Button>
+            )
           }
           <Switch
             checked={isDark}

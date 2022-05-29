@@ -4,7 +4,7 @@ import { erc20ABI } from "wagmi";
 import { LOW_GAS_PAY_CONTRACT } from "../constants";
 
 export const summaryAddress = (addr: string) => 
-  addr ? `${addr.slice(0,2)}...${addr.slice(-4)}` : '';
+  addr ? `${addr.slice(0,6)}...${addr.slice(-4)}` : '';
 
 export const fetchBalance = async (
   wallet: string,
@@ -35,6 +35,6 @@ export const signApprove = async (
 ) => {
   if (!addr || !wallet) return;
   const contract = new ethers.Contract(addr, erc20ABI, signer);
-  const res = await contract.functions.approve(LOW_GAS_PAY_CONTRACT, '11111111');
-  console.log(res);
+  return await contract.functions.approve(LOW_GAS_PAY_CONTRACT, ethers.constants.MaxUint256);
+
 }

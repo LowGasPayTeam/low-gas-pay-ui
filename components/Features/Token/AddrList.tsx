@@ -7,7 +7,8 @@ import {
   Table,
   Text,
 } from "@nextui-org/react";
-import React, { FC, useState } from "react";
+import { isAddress } from "ethers/lib/utils";
+import React, { FC, useMemo, useState } from "react";
 import { TransferRecord } from "../../../typing";
 
 interface PropTypes {
@@ -26,13 +27,17 @@ const AddrList: React.FC<PropTypes> = ({
   children,
 }) => {
   const columns = [
-    { name: "ADDRESS", uid: "address" },
-    { name: "AMOUNT", uid: "amount" },
+    { name: "转出地址", uid: "address" },
+    { name: "转出数量", uid: "amount" },
     { name: "ACTIONS", uid: "actions" },
   ];
 
   const [newAddr, setNewAddr] = useState('');
 
+  const isValidAddr = useMemo(() => {
+    const isEnsName = (/\w+(.eth)$/).test(newAddr);
+    return newAddr && (isAddress(newAddr) || isEnsName);
+  }, [newAddr])
   const handleAddrChange = (addr: string) => {
     setNewAddr(addr);
   }
@@ -62,7 +67,7 @@ const AddrList: React.FC<PropTypes> = ({
               onRowAdd(newAddr);
               setNewAddr('');
             }}
-            disabled={!newAddr}
+            disabled={!isValidAddr}
           >
             添加地址
           </Button>
@@ -71,6 +76,13 @@ const AddrList: React.FC<PropTypes> = ({
           { children }
         </Col>
       </Row>
+      {
+        data.length < 1 && (
+          <Row justify="center">
+            <Text color="warning" size={14}>请在上方添加要转账的地址</Text>
+          </Row>
+        )
+      }
       <Table
         bordered
         shadow={false}
@@ -103,6 +115,8 @@ const AddrList: React.FC<PropTypes> = ({
                   aria-label="amount"
                   aria-labelledby="amount"
                   value={record.amount}
+                  status="primary"
+                  size="sm"
                   fullWidth
                   type="number"
                   onChange={(e) =>
