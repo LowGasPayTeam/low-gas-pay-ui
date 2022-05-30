@@ -1,4 +1,3 @@
-import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { wrapper, store } from "../redux";
 import { createTheme, NextUIProvider } from '@nextui-org/react';
@@ -6,8 +5,9 @@ import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { Provider } from 'react-redux';
 import { createClient, WagmiConfig } from 'wagmi'
 import Navigation from '../components/Navigation';
-import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import '../styles/globals.css'
+import 'react-toastify/dist/ReactToastify.css';
 
 const client = createClient()
 

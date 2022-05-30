@@ -9,10 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.9.0",
-    "@emotion/styled": "^11.8.1",
-    "@mui/icons-material": "^5.8.0",
-    "@mui/material": "^5.8.0",
     "@nextui-org/react": "^1.0.0-beta.7",
     "@walletconnect/web3-provider": "^1.7.8",
     "ethers": "^5.6.7",

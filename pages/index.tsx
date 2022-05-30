@@ -1,12 +1,12 @@
-import styled from '@emotion/styled';
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { Container, Row, Col, Button } from '@nextui-org/react';
+import { Container, Row, Col, Button, styled } from '@nextui-org/react';
 import { useState } from 'react';
 import FeatureSwitch, { ActiveTab } from '../components/Features/FeatureSwitch';
 import FeatureToken from '../components/Features/Token';
+import FeatureNFT from '../components/Features/NFT';
 
-const MainWrap = styled('div')({
+const MainWrap = styled('div', {
   minHeight: 'calc(100vh - 72px)'
 });
 
@@ -25,6 +25,7 @@ const Home: NextPage = () => {
       <Container>
         <FeatureSwitch active={activeTab} onChange={handleTabClick} />
         { activeTab === 'Token' && <FeatureToken />}
+        { activeTab === 'NFT' && <FeatureNFT />}
       </Container>
     </MainWrap>
   )

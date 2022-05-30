@@ -3,23 +3,21 @@ import {
   Col,
   Input,
   Row,
-  styled,
   Table,
   Text,
 } from "@nextui-org/react";
 import { isAddress } from "ethers/lib/utils";
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, PropsWithChildren, useMemo, useState } from "react";
 import { TransferRecord } from "../../../typing";
 
-interface PropTypes {
+interface PropTypes{
   data: TransferRecord[];
   onAmountChange: (index: number, value: string | number) => void;
   onRowAdd: (addr: string) => void;
   onRowDelete: (index: number) => void;
-  children: any
 }
 
-const AddrList: React.FC<PropTypes> = ({ 
+const AddrList: React.FC<PropsWithChildren<PropTypes>> = ({ 
   data, 
   onAmountChange,
   onRowAdd,
@@ -47,6 +45,7 @@ const AddrList: React.FC<PropTypes> = ({
       <Row css={{ mb: "$8" }}>
         <Col span={6}>
           <Input
+            id="newAddr"
             value={newAddr}
             aria-label="newAddr"
             fullWidth
@@ -90,7 +89,7 @@ const AddrList: React.FC<PropTypes> = ({
         selectionMode="none"
         css={{ height: "auto", minWidth: "100%" }}
       >
-        <Table.Header columns={columns}>
+        <Table.Header columns={columns} >
           {(column) => (
             <Table.Column
               key={column.uid}
@@ -112,8 +111,7 @@ const AddrList: React.FC<PropTypes> = ({
               <Table.Cell>
                 <Input
                   className="fixed-table-input-bug"
-                  aria-label="amount"
-                  aria-labelledby="amount"
+                  aria-label={`amount${index}`}
                   value={record.amount}
                   status="primary"
                   size="sm"

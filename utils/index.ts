@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { formatEther } from "ethers/lib/utils";
-import { erc20ABI } from "wagmi";
+import { erc20ABI, erc721ABI } from "wagmi";
 import { LOW_GAS_PAY_CONTRACT } from "../constants";
 
 export const summaryAddress = (addr: string) => 
@@ -17,6 +17,9 @@ export const fetchBalance = async (
   return Number(formatEther(res.balance)).toFixed(4);
 }
 
+/* 
+  检查对应的 Token 是否 Approve
+*/
 export const checkApproved = async (
   wallet: string,
   addr: string,
@@ -28,6 +31,9 @@ export const checkApproved = async (
   return res.remaining.toString()
 }
 
+/* 
+  对某个 Token 发起 Approve TX
+*/
 export const signApprove = async (
   wallet: string,
   addr: string,
@@ -36,5 +42,31 @@ export const signApprove = async (
   if (!addr || !wallet) return;
   const contract = new ethers.Contract(addr, erc20ABI, signer);
   return await contract.functions.approve(LOW_GAS_PAY_CONTRACT, ethers.constants.MaxUint256);
+}
 
+/* 
+  检查对应的 NFT 是否 Approve
+*/
+export const checkNFTApproved = async (
+  wallet: string,
+  addr: string,
+  provider: ethers.providers.Provider
+) => {
+  if (!addr || !wallet) return;
+  const contract = new ethers.Contract(addr, erc721ABI, provider);
+  const res = await contract.functions.isApprovedForAll(wallet, LOW_GAS_PAY_CONTRACT);
+  return res.remaining.toString()
+}
+
+/* 
+  对某个 Token 发起 Approve TX
+*/
+export const signSetApproveForAll = async (
+  wallet: string,
+  addr: string,
+  signer: ethers.Signer
+) => {
+  if (!addr || !wallet) return;
+  const contract = new ethers.Contract(addr, erc20ABI, signer);
+  return await contract.functions.setApprovalForAll(LOW_GAS_PAY_CONTRACT, true);
 }

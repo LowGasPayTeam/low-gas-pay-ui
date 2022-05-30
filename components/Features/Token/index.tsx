@@ -1,5 +1,5 @@
-import { Button, Card, Col, Container, Input, Row, styled, Table, Text } from "@nextui-org/react";
-import React, { FC, useMemo, useRef, useState } from "react";
+import { Button, Card, Container, styled, Text } from "@nextui-org/react";
+import React, { FC, useMemo, useState } from "react";
 import { TransferRecord } from "../../../typing";
 import AddrList from "./AddrList";
 import TransferSetting from "./TransferSetting";
@@ -26,7 +26,7 @@ const FeatureToken: FC = () => {
   }
   const handleAddRecord = (addr: string) => {
     const newRecord: TransferRecord = {
-      id: records.length,
+      id: addr,
       amount: '',
       address: addr
     }
