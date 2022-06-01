@@ -19,18 +19,19 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { TESTNET_TOKENS } from "../../../constants";
 import { WalletStateType } from "../../../redux";
-import { TransferRecord } from "../../../typing";
+import { TransferSettings } from "../../../typing";
 import { checkApproved, fetchBalance, signApprove } from "../../../utils";
 import TokenModal from "./TokenModal";
 
 const TokenSelectCard = styled(Card, {
   margin: '$8 0'
 });
-
-interface PropTypes {}
+interface PropTypes {
+  onChange: (params: TransferSettings) => void;
+}
 
 const TransferSetting: React.FC<PropTypes> = ({
-  
+  onChange
 }) => {
   const [selectedToken, setSelectedToken] = useState('ETH');
   const [balance, setBalance] = useState('0');
@@ -47,7 +48,7 @@ const TransferSetting: React.FC<PropTypes> = ({
   const closeSelectModal = () => setVisible(false);
 
   // Modal 处理选择事件
-  const handleChange = useCallback(async (token: string, balance?: string) => {
+  const handleChange = async (token: string, balance?: string) => {
     setSelectedToken(token);
     setVisible(false);
   
@@ -68,7 +69,11 @@ const TransferSetting: React.FC<PropTypes> = ({
       setApproved(allowance !== '0')
     }
     setBalance(balance || '0');
-  }, [address, provider]);
+    onChange({
+      token: selectedToken,
+      orderGasType: '',
+    })
+  };
 
   // 获取默认选择的余额
   useEffect(() => {

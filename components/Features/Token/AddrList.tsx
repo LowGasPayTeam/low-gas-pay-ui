@@ -7,7 +7,7 @@ import {
   Text,
 } from "@nextui-org/react";
 import { isAddress } from "ethers/lib/utils";
-import React, { FC, PropsWithChildren, useMemo, useState } from "react";
+import React, { PropsWithChildren, useMemo, useState } from "react";
 import { TransferRecord } from "../../../typing";
 
 interface PropTypes{
