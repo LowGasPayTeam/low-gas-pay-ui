@@ -1,6 +1,7 @@
 import { Button, Card, Container, styled, Text } from "@nextui-org/react";
 import React, { FC, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import { TESTNET_TOKENS } from "../../../constants";
 import { type WalletStateType } from "../../../redux";
 import { createOrder, type Transaction } from "../../../services/order";
@@ -69,10 +70,14 @@ const FeatureToken: FC = () => {
       order_gas_type: 'ntom',
       transactions: txn,
     }
+    
     try {
       const res = await createOrder(data);
       console.log(res);
+      setRecords([]);
+      toast.success('订单提交成功！');
     } catch(err) {
+      toast.error('订单提交失败！');
       console.log(err);
     }
   }
