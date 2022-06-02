@@ -5,6 +5,7 @@ import { useState } from 'react';
 import FeatureSwitch, { ActiveTab } from '../components/Features/FeatureSwitch';
 import FeatureToken from '../components/Features/Token';
 import FeatureNFT from '../components/Features/NFT';
+import FeatureOrder from '../components/Features/Order';
 
 const MainWrap = styled('div', {
   minHeight: 'calc(100vh - 72px)'
@@ -26,6 +27,7 @@ const Home: NextPage = () => {
         <FeatureSwitch active={activeTab} onChange={handleTabClick} />
         { activeTab === 'Token' && <FeatureToken />}
         { activeTab === 'NFT' && <FeatureNFT />}
+        { activeTab === 'Order' && <FeatureOrder />}
       </Container>
     </MainWrap>
   )

@@ -63,7 +63,7 @@ export async function createOrder(params: CreateOrderParams): Promise<TokenOrder
  */
 export interface GetTokenOrdersParams {
   pageNumber: number;
-  pageSize: number;
+  pageSize?: number;
   address: string;
 }
 
@@ -71,7 +71,7 @@ export async function getTokenOrders(params: GetTokenOrdersParams) {
   const {
     pageNumber = 1,
     pageSize = 20,
-    address
+    address = ''
   } = params;
   const res = await request({
     url: `/tokens?page=${pageNumber}&size=${pageSize}&address=${address}`,
