@@ -1,20 +1,17 @@
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
+  Box,
   Button,
-  Card,
-  Col,
+  HStack,
   Input,
-  Loading,
-  Row,
   Spacer,
-  styled,
+  Spinner,
   Switch,
-  SwitchEvent,
-  Table,
   Text,
-} from "@nextui-org/react";
+} from "@chakra-ui/react";
+import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { formatEther } from "ethers/lib/utils";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { ChevronDown } from "react-iconly";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { TESTNET_TOKENS } from "../../../constants";
@@ -23,15 +20,16 @@ import { TransferSettings } from "../../../typing";
 import { checkApproved, fetchBalance, signApprove } from "../../../utils";
 import TokenModal from "./TokenModal";
 
-const TokenSelectCard = styled(Card, {
-  margin: '$8 0'
-});
 interface PropTypes {
   onChange: (params: TransferSettings) => void;
+  onOrder: () => void;
+  canPlaceOrder: boolean;
 }
 
 const TransferSetting: React.FC<PropTypes> = ({
-  onChange
+  onChange,
+  onOrder,
+  canPlaceOrder
 }) => {
   const [selectedToken, setSelectedToken] = useState('ETH');
   const [balance, setBalance] = useState('0');
@@ -39,6 +37,10 @@ const TransferSetting: React.FC<PropTypes> = ({
   const [isApproving, setIsApproving] = useState(false);
   const [visible, setVisible] = useState(false);
   const [isRecharge, setIsRecharge] = useState(false);
+  const [gasPrice, SetGasPrice] = useState('');
+  const [gasLimit, SetGasLimit] = useState('');
+  const [startDatetime, setStartDatetime] = useState(new Date());
+  const [endDatetime, setEndDatetime] = useState(new Date());
   // from redux
   const state = useSelector((state) => state );
   const { provider, address, signer } = state as WalletStateType;
@@ -72,6 +74,8 @@ const TransferSetting: React.FC<PropTypes> = ({
     onChange({
       token: selectedToken,
       orderGasType: '',
+      gasPrice,
+      gasLimit,
     })
   };
 
@@ -91,7 +95,7 @@ const TransferSetting: React.FC<PropTypes> = ({
   }, [selectedToken, address, provider]);
 
   // Gas 代扣模式变化
-  const onFeeModeChagne = (e: SwitchEvent) => {
+  const onFeeModeChagne = (e: any) => {
     setIsRecharge(e.target.checked);
   };
 
@@ -117,61 +121,137 @@ const TransferSetting: React.FC<PropTypes> = ({
     }
   }
 
-  return (
-    <TokenSelectCard>
-      <Card.Header>
-        <Text h5>需要转出的 Token</Text>
-      </Card.Header>
-      <Row css={{ padding: '$8 $0' }}>
-        <Col span={6} css={{ borderRight: '1px solid $gray100' }}>
-          <Button
-            bordered 
-            color="secondary" 
-            iconRight={<ChevronDown set="bold" primaryColor="blueviolet"/>}
-            onPress={openSelectModal}
+  const handleGasPriceChange = (event: any) => {
+    SetGasPrice(event.target.value);
+    onChange({
+      token: selectedToken,
+      orderGasType: '',
+      gasPrice,
+      gasLimit,
+    })
+  }
+  const handleGasLimitChange = (event: any) => {
+    SetGasLimit(event.target.value);
+    onChange({
+      token: selectedToken,
+      orderGasType: '',
+      gasPrice,
+      gasLimit,
+    })
+  }
 
-          >
-            {selectedToken}
-          </Button>
-          <Spacer y={1} />
-          <Button
-            size="sm"
-            color="error"
-            disabled={approved || isApproving}
-            onPress={handleApprove}
-          >
-            { isApproving ? (
-              <Loading type="points-opacity" color="currentColor" size="sm" />
-            ) : (
-                approved ? '已授权' : '授权'
-            )}
-          </Button>
-          <Spacer y={1} />
-          <Text size={14}>钱包余额: { balance }</Text>
-        </Col>
-        <Spacer y={2} />
-        <Col span={4}>
-          <Row css={{ height: '40px' }}>
-            <Text span css={{ lh: '28px'}}>使用充值 Gas Fee：</Text>
-            <Switch
-              checked={isRecharge} 
-              onChange={onFeeModeChagne}
-            />
-          </Row>
-          <Spacer y={1} />
-          <Button size="sm" auto disabled>
-            充值
-          </Button>
-          <Spacer y={1} />
-          <Text size={14}>账户余额: { 0 }</Text>
-        </Col>
-      </Row>
+  const handleDateChange = (type: string) => (date: any) => {
+    if (type === 'start') {
+      setStartDatetime(date);
+    }
+    if (type === 'end') {
+      setEndDatetime(date);
+    }
+
+    onChange({
+      token: selectedToken,
+      orderGasType: '',
+      gasPrice,
+      gasLimit,
+      startDatetime,
+      endDatetime,
+    })
+  }
+  return (
+    <Box w={400} borderWidth='1px' p={6} borderRadius="xl">
+      <HStack justify='space-between' mb={2}>
+        <Text fontSize='md'>转账的代币</Text>
+        <Text fontSize='xs' color="gray.600">余额: { balance }</Text>
+      </HStack>
+      <HStack justify='space-between' mb={6}>
+        <Button
+          borderRadius='full'
+          variant='outline'
+          minW={100}
+          rightIcon={<ChevronDownIcon />}
+          onClick={openSelectModal}
+        >
+          {selectedToken}
+        </Button>
+        <Button
+          colorScheme='brand'
+          w={160}
+          disabled={approved || isApproving}
+          onClick={handleApprove}
+        >
+          { isApproving ? (
+            <Spinner size='sm' />
+          ) : (
+              approved ? '已授权' : '授权'
+          )}
+        </Button>
+      </HStack>
+      <HStack mb={2}>
+        <Text>使用充值 Gas Fee：</Text>
+        <Switch
+          checked={isRecharge} 
+          onChange={onFeeModeChagne}
+        />
+      </HStack>
+      <HStack mb={6}>
+        <Button disabled w={120} variant='outline' colorScheme='brand'>
+          充值
+        </Button>
+        <Spacer />
+        <Text fontSize='xs' color="gray.600">余额: { 0 }</Text>
+      </HStack>
+      <Text fontSize='md' mb={2}>GAS 设置</Text>
+      <HStack justify='space-between' mb={6}>
+        <Box w={160}>
+          <Text mb={1} fontSize="sm" color='gray.700'>Gas Price(GWei)</Text>
+          <Input
+            borderRadius='lg'
+            onChange={handleGasPriceChange}
+            placeholder='Gas Price(GWei)'
+          />
+        </Box>
+        <Box w={160}>
+          <Text mb={1} fontSize="sm" color='gray.700'>Gas Limit</Text>
+          <Input
+            borderRadius='lg'
+            onChange={handleGasLimitChange}
+            placeholder='Gas Limit'
+          />
+        </Box>
+      </HStack>
+      <Text fontSize='md' mb={2}>订单时效</Text>
+      <Box mb={2}>
+        <Text mb={1} fontSize="sm" color='gray.700'>起始时间</Text>
+        <SingleDatepicker
+          name="date-input"
+          date={startDatetime}
+          onDateChange={handleDateChange('start')}
+        />
+      </Box>
+      <Box mb={6}>
+        <Text mb={1} fontSize="sm" color='gray.700'>结束时间</Text>
+        <SingleDatepicker
+          name="date-input"
+          date={endDatetime}
+          onDateChange={handleDateChange('end')}
+        />
+      </Box>
+      <Button
+        size="md"
+        borderRadius='lg'
+        disabled={!canPlaceOrder}
+        css={{ width: "100%" }}
+        onClick={onOrder}
+        colorScheme='brand'
+      >
+        确认转账
+      </Button>
       <TokenModal
         visible={visible} 
         onChange={handleChange} 
         onClose={closeSelectModal}
       />
-    </TokenSelectCard>
+    </Box>
   )
 }
 

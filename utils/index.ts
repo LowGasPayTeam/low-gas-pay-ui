@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { erc20ABI, erc721ABI } from "wagmi";
-import { LOW_GAS_PAY_CONTRACT } from "../constants";
+import { LOW_GAS_PAY_CONTRACT, TESTNET_TOKENS } from "../constants";
 
 export const summaryAddress = (addr: string) => 
   addr ? `${addr.slice(0,6)}...${addr.slice(-4)}` : '';
@@ -70,3 +70,9 @@ export const signSetApproveForAll = async (
   const contract = new ethers.Contract(addr, erc20ABI, signer);
   return await contract.functions.setApprovalForAll(LOW_GAS_PAY_CONTRACT, true);
 }
+
+/**
+ * 
+ */
+export const getTokenByContract = (contract: string) => 
+  Object.keys(TESTNET_TOKENS).find((key => TESTNET_TOKENS[key] === contract));

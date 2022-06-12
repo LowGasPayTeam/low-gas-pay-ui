@@ -1,14 +1,14 @@
 import { request } from "./base";
 
 export interface Transaction {
-  amount:          string;
-  contract:        string;
-  from:            string;
+  token_amount:    string;
+  token_contract:  string;
+  from_addr:       string;
   gas_paid_amount: string;
   gas_paid_status: string;
   gas_used:        string;
   status:          string;
-  to:              string;
+  to_addr:         string;
 }
 
 /**

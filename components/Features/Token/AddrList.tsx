@@ -1,35 +1,38 @@
 import {
   Button,
-  Col,
+  HStack,
   Input,
-  Row,
-  Table,
   Text,
-} from "@nextui-org/react";
+  VStack,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  chakra,
+  TableContainer,
+  TableCaption
+} from "@chakra-ui/react";
 import { isAddress } from "ethers/lib/utils";
 import React, { PropsWithChildren, useMemo, useState } from "react";
 import { TransferRecord } from "../../../typing";
 
 interface PropTypes{
   data: TransferRecord[];
+  currentToken: string;
   onAmountChange: (index: number, value: string | number) => void;
   onRowAdd: (addr: string) => void;
   onRowDelete: (index: number) => void;
 }
 
-const AddrList: React.FC<PropsWithChildren<PropTypes>> = ({ 
-  data, 
+const AddrList: React.FC<PropTypes> = ({ 
+  data,
+  currentToken,
   onAmountChange,
   onRowAdd,
   onRowDelete,
-  children,
 }) => {
-  const columns = [
-    { name: "转出地址", uid: "address" },
-    { name: "转出数量", uid: "amount" },
-    { name: "ACTIONS", uid: "actions" },
-  ];
-
   const [newAddr, setNewAddr] = useState('');
 
   const isValidAddr = useMemo(() => {
@@ -41,100 +44,90 @@ const AddrList: React.FC<PropsWithChildren<PropTypes>> = ({
   }
 
   return (
-    <>
-      <Row css={{ mb: "$8" }}>
-        <Col span={6}>
-          <Input
-            id="newAddr"
-            value={newAddr}
-            aria-label="newAddr"
-            fullWidth
-            size="md"
-            type="text"
-            onChange={(e) => {
-              handleAddrChange(e.target.value);
-            }}
-            placeholder="转账地址"
-          />
-        </Col>
-        <Col span={3}>
-          <Button
-            size="md"
-            auto
-            css={{ ml: "$8" }} 
-            onPress={() => {
-              onRowAdd(newAddr);
-              setNewAddr('');
-            }}
-            disabled={!isValidAddr}
-          >
-            添加地址
-          </Button>
-        </Col>
-        <Col span={3}>
-          { children }
-        </Col>
-      </Row>
-      {
-        data.length < 1 && (
-          <Row justify="center">
-            <Text color="warning" size={14}>请在上方添加要转账的地址</Text>
-          </Row>
-        )
-      }
-      <Table
-        bordered
-        shadow={false}
-        aria-label="Transfer Record"
-        selectionMode="none"
-        css={{ height: "auto", minWidth: "100%" }}
+    <VStack
+      alignItems='stretch'
+      align='stretch'
+      flex='1'
+    >
+      <HStack
+        p={4}
+        borderWidth='1px' 
+        borderRadius='xl'
+        mb={2}
       >
-        <Table.Header columns={columns} >
-          {(column) => (
-            <Table.Column
-              key={column.uid}
-              hideHeader={column.uid === "actions"}
-              align={column.uid === "actions" ? "center" : "start"}
-            >
-              {column.name}
-            </Table.Column>
+        <Input
+          id="newAddr"
+          value={newAddr}
+          size="md"
+          type="text"
+          onChange={(e) => {
+            handleAddrChange(e.target.value);
+          }}
+          placeholder="转账地址"
+        />
+        <Button
+          width={160}
+          onClick={() => {
+            onRowAdd(newAddr);
+            setNewAddr('');
+          }}
+          disabled={!isValidAddr}
+        >
+          添加地址
+        </Button>
+      </HStack>
+      <TableContainer borderWidth='1px' p={2} borderRadius='xl'>
+        <Table>
+          { data.length < 1 && (
+            <TableCaption>
+              请在上面添加需要接收的 ETH 地址或者 ENS 地址
+            </TableCaption>
           )}
-        </Table.Header>
-        <Table.Body>
-          {data.map((record: TransferRecord, index) => (
-            <Table.Row key={record.id}>
-              <Table.Cell>
-                <Text size={14} css={{ minWidth: "319px" }}>
-                  {record.address}
-                </Text>
-              </Table.Cell>
-              <Table.Cell>
-                <Input
-                  className="fixed-table-input-bug"
-                  aria-label={`amount${index}`}
-                  value={record.amount}
-                  status="primary"
-                  size="sm"
-                  fullWidth
-                  type="number"
-                  onChange={(e) =>
-                    onAmountChange(index, e.target.value)
-                  }
-                  placeholder="数量"
-                />
-              </Table.Cell>
-              <Table.Cell>
-                <div style={{ width: "60px" }}>
-                  <Button light color="error" auto onPress={() => onRowDelete(index)}>
+          <Thead>
+            <Tr>
+              <Th w={400}>接收地址</Th>
+              <Th>接收数量</Th>
+              <Th>操作</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {data.map((record: TransferRecord, index) => (
+              <Tr key={record.id}>
+                <Td>
+                  <Text>
+                    {record.address}
+                  </Text>
+                </Td>
+                <Td>
+                  <HStack>
+                    <Input
+                      value={record.amount}
+                      size="sm"
+                      type="number"
+                      borderRadius='md'
+                      onChange={(e) =>
+                        onAmountChange(index, e.target.value)
+                      }
+                      placeholder="数量"
+                    />
+                    <Text pl={2}>{ currentToken }</Text>
+                  </HStack>
+                </Td>
+                <Td>
+                  <Button 
+                    variant='ghost'
+                    colorScheme="pink" 
+                    onClick={() => onRowDelete(index)}
+                  >
                     删除
                   </Button>
-                </div>
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
-    </>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </VStack>
   );
 };
 

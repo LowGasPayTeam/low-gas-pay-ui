@@ -1,4 +1,21 @@
-import { Loading, Modal, Row, styled, Table, Text } from "@nextui-org/react";
+import {
+  Spinner, 
+  Modal, 
+  Table, 
+  Text,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  Thead,
+  Td,
+  Tr,
+  Tbody,
+  Th,
+} from "@chakra-ui/react";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { TESTNET_TOKENS } from '../../../constants';
 import { WalletStateType } from "../../../redux";
@@ -27,8 +44,8 @@ const TokenModal: FC<PropTypes> = ({
     }));
   const [balances, setBalances] = useState<any>({ 'ETH': '0' })
 
-  const handleSelectionChange = (keys: any) => {
-    onChange(keys.currentKey, balances[keys.currentKey]);
+  const handleSelectionChange = (token: any) => {
+    onChange(token.token, balances[token.token]);
   }
 
   // 获取代币列表的余额
@@ -59,44 +76,47 @@ const TokenModal: FC<PropTypes> = ({
 
   return (
     <Modal
-      closeButton
-      aria-labelledby="modal-title"
-      open={visible}
+      isOpen={visible}
       onClose={onClose}
     >
-      <Modal.Header>
-        <Text id="modal-title" size={14}>
-          请选择要转账的代币
-        </Text>
-      </Modal.Header>
-      <Modal.Body css={{  padding: '$0 $8 $8'}}>
-        <Table
-          aria-label="Supported Token collection table"
-          css={{ height: "auto", minWidth: "100%", padding: '$0'}}
-          lined
-          headerLined
-          shadow={false}
-          onSelectionChange={handleSelectionChange}
-          selectionMode="single"
-        >
-          <Table.Header>
-            <Table.Column>Token</Table.Column>
-            <Table.Column align="end">余额</Table.Column>
-          </Table.Header>
-          <Table.Body>
-            {tokens.map((token) => (
-              <Table.Row key={token.token}>
-                <Table.Cell>{ token.token }</Table.Cell>
-                <Table.Cell css={{ textAlign: 'right'}}>
-                  { balances[token.token] ? balances[token.token] : (
-                    <Loading size="xs" />
-                  )}
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </Modal.Body>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>
+          <Text>
+            请选择要转账的代币
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Table>
+            <Thead>
+              <Tr>
+                <Th>Token</Th>
+                <Th isNumeric>余额</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {tokens.map((token) => (
+                <Tr
+                  key={token.token} 
+                  cursor='pointer'
+                  _hover={{
+                    background: 'gray.200',
+                  }}
+                  onClick={() => handleSelectionChange(token)}
+                >
+                  <Td>{ token.token }</Td>
+                  <Td isNumeric>
+                    { balances[token.token] ? balances[token.token] : (
+                      <Spinner size="xs" />
+                    )}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </ModalBody>
+      </ModalContent>
     </Modal>
   )
 };

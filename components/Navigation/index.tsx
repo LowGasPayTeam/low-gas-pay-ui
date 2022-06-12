@@ -1,48 +1,45 @@
 import { WalletStateType } from "../../redux";
-import { FC, useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
+import { useRouter } from 'next/router'
 import { providers } from "ethers";
-import { Button, Container, Row, Text, styled, Card, Switch, useTheme, SwitchEvent } from "@nextui-org/react";
-import { useTheme as useNextTheme } from 'next-themes';
-import { createWeb3Modal } from '../../utils/createWeb3Modal';
+import {
+  Button,
+  Text,
+  Box,
+  HStack,
+  Flex,
+  Spacer,
+  Divider,
+  useRadioGroup,
+} from "@chakra-ui/react";
+import { BiHomeHeart, BiListUl  } from "react-icons/bi";
+import { createWeb3Modal } from "../../utils/createWeb3Modal";
 import { useDispatch, useSelector } from "react-redux";
-import { summaryAddress } from '../../utils';
+import { summaryAddress } from "../../utils";
 import { useBalance } from "wagmi";
-import { NETWORKING } from '../../constants';
+import { NETWORKING } from "../../constants";
 
-const LogoContainer = styled('div', {
-  width: 'auto',
-});
-const LogoTitle = styled(Text, {
-  fontSize: '20px',
-  fontWeight: 'normal',
-  lineHeight: '40px',
-});
-
-const NavigationWrap = styled(Container, {
-  padding: '1rem',
-})
-
-const AddressText = styled('span', {
-  padding: '$2 $6',
-  borderRadius: '$md',
-  backgroundColor: '$gray100'
-})
+import Link from "next/link";
+import Logo from "../../assets/text-446*96.png";
+import Image from "next/image";
+import NavRadio from "./NavRadio";
 
 const Navigation: FC = () => {
   const web3Modal = useRef<any>();
-  const { setTheme } = useNextTheme();
-  const { isDark, type } = useTheme();
   const dispatch = useDispatch();
-  const state = useSelector((state) => state );
+  const state = useSelector((state) => state);
+  const router = useRouter();
+
   const { connection, provider, address } = state as WalletStateType;
   const { data } = useBalance({
     addressOrName: address,
     chainId: NETWORKING.CHAIN_ID,
   });
 
-  const switchTheme = (e: SwitchEvent) => {
-    setTheme(e.target.checked ? 'dark' : 'light')
-  }
+  const handleNavChange = (value: string) => {
+    router.push(value);
+  };
+
   const connectWallet = useCallback(async () => {
     try {
       const connection = await web3Modal.current.connect();
@@ -51,28 +48,31 @@ const Navigation: FC = () => {
       const address = await signer.getAddress();
       const network = await provider.getNetwork();
       dispatch({
-        type: 'SET_WEB3_PROVIDER',
+        type: "SET_WEB3_PROVIDER",
         connection,
         provider,
         address,
         chainId: network.chainId,
         signer,
       });
-    } catch(err) {
+    } catch (err) {
       console.log(err);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const disconnect = useCallback(async function () {
-    await web3Modal.current.clearCachedProvider()
-    if (provider?.disconnect && typeof provider.disconnect === 'function') {
-      await provider.disconnect();
-    }
-    dispatch({
-      type: 'RESET_WEB3_PROVIDER',
-    })
-  }, [provider, dispatch]);
+  const disconnect = useCallback(
+    async function () {
+      await web3Modal.current.clearCachedProvider();
+      if (provider?.disconnect && typeof provider.disconnect === "function") {
+        await provider.disconnect();
+      }
+      dispatch({
+        type: "RESET_WEB3_PROVIDER",
+      });
+    },
+    [provider, dispatch]
+  );
 
   useEffect(() => {
     if (!web3Modal.current) {
@@ -82,87 +82,108 @@ const Navigation: FC = () => {
 
   useEffect(() => {
     if (web3Modal.current?.cachedProvider) {
-      connectWallet()
+      connectWallet();
     }
   }, [connectWallet]);
 
   useEffect(() => {
     if (connection?.on) {
       const handleAccountsChanged = (accounts: string[]) => {
-        console.log('accountsChanged', accounts);
+        console.log("accountsChanged", accounts);
         dispatch({
-          type: 'SET_ADDRESS',
+          type: "SET_ADDRESS",
           address: accounts[0],
         });
-      }
+      };
 
       const handleChainChanged = (_hexChainId: string) => {
         // todo: 非 Ethereum 错误提示
         window.location.reload();
-      }
+      };
 
       const handleDisconnect = (error: { code: number; message: string }) => {
-        console.log('disconnect', error);
+        console.log("disconnect", error);
         disconnect();
-      }
+      };
 
-      connection.on('accountsChanged', handleAccountsChanged)
-      connection.on('chainChanged', handleChainChanged)
-      connection.on('disconnect', handleDisconnect)
+      connection.on("accountsChanged", handleAccountsChanged);
+      connection.on("chainChanged", handleChainChanged);
+      connection.on("disconnect", handleDisconnect);
 
       return () => {
         if (connection.removeListener) {
-          connection.removeListener('accountsChanged', handleAccountsChanged)
-          connection.removeListener('chainChanged', handleChainChanged)
-          connection.removeListener('disconnect', handleDisconnect)
+          connection.removeListener("accountsChanged", handleAccountsChanged);
+          connection.removeListener("chainChanged", handleChainChanged);
+          connection.removeListener("disconnect", handleDisconnect);
         }
-      }
+      };
     }
   }, [connection, disconnect, dispatch]);
 
-  return (
-    <NavigationWrap gap={1} fluid>
-      <Row justify="space-between">
-        <LogoContainer>
-          <LogoTitle h1>Low Gas Pay</LogoTitle>
-        </LogoContainer>
-        <Row fluid={false} css={{ 
-          alignItems: 'center',
-          height: '40px'
-        }}>
-          {
-            address ? (
-              <Card bordered shadow={false} css={{ padding: '$1', mr: '$8' }}>
-                <Card.Body css={{ padding: "$0" }}>
-                  <Row>
-                    <Text span css={{ minWidth: '50px', padding: '$2 $6' }}>
-                      {Number(data?.formatted).toFixed(3)} {data?.symbol}
-                    </Text>
-                    <AddressText>
-                      { summaryAddress(address) }
-                    </AddressText>
-                  </Row>
-                </Card.Body>
-              </Card>
-            ) : (
-              <Button
-                auto
-                size="sm" 
-                onPress={connectWallet} 
-                css={{ mr: '$8' }}
-              >
-                链接钱包
-              </Button>
-            )
-          }
-          <Switch
-            checked={isDark}
-            onChange={switchTheme}
-          />
-        </Row>
-      </Row>
-    </NavigationWrap>
-  )
-}
+  const {
+    value: currentPage,
+    getRadioProps,
+    getRootProps,
+  } = useRadioGroup({
+    defaultValue: router.asPath ?? '/',
+    onChange: handleNavChange,
+  });
 
-export default Navigation
+  return (
+    <Flex p={4} pt={8} pb={8}>
+      <Box>
+        <Link href="/">
+          <Image
+            src={Logo}
+            width={200}
+            height={43}
+            quality={100}
+            alt="metagas"
+            layout="intrinsic"
+            objectFit="contain"
+          />
+        </Link>
+      </Box>
+      <Spacer />
+      <HStack>
+        <HStack {...getRootProps()}>
+          <NavRadio
+            text="首页"
+            icon={BiHomeHeart}
+            {...getRadioProps({ value: "/" })}
+          />
+          <NavRadio
+            text="订单"
+            icon={BiListUl}
+            {...getRadioProps({ value: "/order/token" })}
+          />
+        </HStack>
+        <Divider orientation="vertical" />
+        {address ? (
+          <Box
+            py={1}
+            px={2}
+            borderWidth="2px"
+            borderRadius="3xl"
+            overflow="hidden"
+          >
+            <HStack>
+              <Text minW={50}>
+                {Number(data?.formatted).toFixed(3)} {data?.symbol}
+              </Text>
+              <Box bg="gray.100" px={3} py={1} borderRadius="3xl">
+                {summaryAddress(address)}
+              </Box>
+            </HStack>
+          </Box>
+        ) : (
+          <Button size="md" colorScheme="blue" onClick={connectWallet} mr={8}>
+            链接钱包
+          </Button>
+        )}
+      </HStack>
+    </Flex>
+  );
+};
+
+export default Navigation;

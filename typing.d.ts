@@ -13,4 +13,8 @@ export interface TransferRecord {
 export interface TransferSettings {
   token: keyof typeof TESTNET_TOKENS;
   orderGasType: string;
+  gasPrice?: string;
+  gasLimit?: string;
+  startDatetime?: Date;
+  endDatetime?: Date;
 }
