@@ -130,7 +130,7 @@ const Navigation: FC = () => {
   });
 
   return (
-    <Flex p={4} pt={8} pb={8}>
+    <Flex px={4} py={8} bg='gray.100'>
       <Box>
         <Link href="/">
           <Image
@@ -146,7 +146,7 @@ const Navigation: FC = () => {
       </Box>
       <Spacer />
       <HStack>
-        <HStack {...getRootProps()}>
+        <HStack {...getRootProps()} spacing='5'>
           <NavRadio
             text="首页"
             icon={BiHomeHeart}
@@ -158,7 +158,13 @@ const Navigation: FC = () => {
             {...getRadioProps({ value: "/order/token" })}
           />
         </HStack>
-        <Divider orientation="vertical" />
+        <HStack px={3} h={8}>
+          <Divider
+            size='sx'
+            orientation="vertical" 
+            borderColor='gray.400'
+          />
+        </HStack>
         {address ? (
           <Box
             py={1}
@@ -166,6 +172,7 @@ const Navigation: FC = () => {
             borderWidth="2px"
             borderRadius="3xl"
             overflow="hidden"
+            bg='white'
           >
             <HStack>
               <Text minW={50}>
@@ -177,7 +184,7 @@ const Navigation: FC = () => {
             </HStack>
           </Box>
         ) : (
-          <Button size="md" colorScheme="blue" onClick={connectWallet} mr={8}>
+          <Button size="md" colorScheme="brand" onClick={connectWallet} mr={8}>
             链接钱包
           </Button>
         )}

@@ -158,7 +158,7 @@ const TransferSetting: React.FC<PropTypes> = ({
     })
   }
   return (
-    <Box w={400} borderWidth='1px' p={6} borderRadius="xl">
+    <Box w={400} borderWidth='1px' p={6} borderRadius="xl" bg='white'>
       <HStack justify='space-between' mb={2}>
         <Text fontSize='md'>转账的代币</Text>
         <Text fontSize='xs' color="gray.600">余额: { balance }</Text>
@@ -191,6 +191,7 @@ const TransferSetting: React.FC<PropTypes> = ({
         <Switch
           checked={isRecharge} 
           onChange={onFeeModeChagne}
+          colorScheme='brand'
         />
       </HStack>
       <HStack mb={6}>

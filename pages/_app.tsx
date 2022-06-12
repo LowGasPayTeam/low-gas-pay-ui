@@ -6,11 +6,20 @@ import Navigation from '../components/Navigation';
 import { ToastContainer } from 'react-toastify';
 import '../styles/globals.css'
 import 'react-toastify/dist/ReactToastify.css';
-import { ChakraProvider, extendTheme } from '@chakra-ui/react'
+import { ChakraProvider, extendTheme, type ThemeConfig } from '@chakra-ui/react'
 
 const client = createClient()
 
-const theme = extendTheme({
+const theme: ThemeConfig = extendTheme({
+  initialColorMode: 'light',
+  useSystemColorMode: false,
+  semanticTokens: {
+    colors: {
+      "chakra-body-bg": {
+        _light: 'gray.100',
+    },
+    }
+  },
   colors: {
     brand: {
       "50": "#FBECEA",
@@ -23,15 +32,8 @@ const theme = extendTheme({
       "700": "#7F291A",
       "800": "#551B11",
       "900": "#2A0E09"
-    },
-    styles: {
-      light: {
-        body: {
-          bg: 'gray.100',
-        },
-      },
-    },
-  },
+    }
+  }
 })
 
 function MyApp({ Component, pageProps }: AppProps) {

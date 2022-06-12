@@ -54,6 +54,7 @@ const AddrList: React.FC<PropTypes> = ({
         borderWidth='1px' 
         borderRadius='xl'
         mb={2}
+        bg='white'
       >
         <Input
           id="newAddr"
@@ -76,7 +77,7 @@ const AddrList: React.FC<PropTypes> = ({
           添加地址
         </Button>
       </HStack>
-      <TableContainer borderWidth='1px' p={2} borderRadius='xl'>
+      <TableContainer borderWidth='1px' p={2} borderRadius='xl' bg='white'>
         <Table>
           { data.length < 1 && (
             <TableCaption>
