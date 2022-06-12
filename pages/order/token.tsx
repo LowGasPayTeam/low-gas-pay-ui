@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { Button, Heading, Container, styled } from '@chakra-ui/react'
+import { Button, Heading, Container, styled, useToast } from '@chakra-ui/react'
 import ExpandTable from '../../components/Features/Order/ExpandTable';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -21,7 +21,7 @@ const Order: NextPage = () => {
   const [total, setTotal] = useState(0);
   const state = useSelector((state) => state );
   const { address } = state as WalletStateType;
-
+  const toast = useToast();
   const onPageChange = (page: number) => {
     setCurrentPage(page);
   }
@@ -75,18 +75,24 @@ const Order: NextPage = () => {
     }
   ], []);
 
-  const data: any[] = [];
-
-  
   useEffect(() => {
     const fetchOrders = async () => {
       if (!address) return;
-      const res = await getTokenOrders({ pageNumber: currentPage, address });
-      updateOrders(res.data.orders);
-      setTotal(Math.ceil(res.data.total / PAGE_NUMBER));
+      try{
+        const res = await getTokenOrders({ pageNumber: currentPage, address });
+        updateOrders(res.data.orders);
+        setTotal(Math.ceil(res.data.total / PAGE_NUMBER));
+      } catch (err) {
+        toast({
+          title: `订单数据获取失败`,
+          status: 'error',
+          isClosable: true,
+          position: 'top'
+        })
+      }
     }
     fetchOrders();
-  }, [address, currentPage])
+  }, [address, currentPage, toast])
 
   return (
     <MainWrap>

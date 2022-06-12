@@ -99,32 +99,35 @@ const ExpandTable: FC<PropTypes> = ({ columns, data, pagination }) => {
   });
 
   return (
-    <Box maxW='100%' borderWidth='1px' borderRadius='lg' overflow='hidden'>
+    <Box
+      maxW="100%"
+      borderWidth="1px"
+      borderRadius="lg"
+      overflow="hidden"
+      bg="white"
+    >
       <TableContainer>
         <Table {...getTableProps()}>
+          { rows.length < 1 && (<TableCaption>暂无数据</TableCaption>) }
           <Thead>
             {headerGroups.map((headerGroup) => (
               <Tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <Th
-                    {...column.getHeaderProps()}
-                  >
-                    {column.render('Header')}
+                  <Th {...column.getHeaderProps()}>
+                    {column.render("Header")}
                   </Th>
                 ))}
               </Tr>
             ))}
           </Thead>
           <Tbody {...getTableBodyProps()}>
-            {(rows as Array<Row<any> & {isExpanded: boolean}>).map((row) => {
-              prepareRow(row)
+            {(rows as Array<Row<any> & { isExpanded: boolean }>).map((row) => {
+              prepareRow(row);
               return (
                 <>
                   <Tr {...row.getRowProps()}>
                     {row.cells.map((cell) => (
-                      <Td {...cell.getCellProps()}>
-                        {cell.render('Cell')}
-                      </Td>
+                      <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>
                     ))}
                   </Tr>
                   {row.isExpanded ? (
@@ -135,13 +138,13 @@ const ExpandTable: FC<PropTypes> = ({ columns, data, pagination }) => {
                     </Tr>
                   ) : null}
                 </>
-              )
+              );
             })}
           </Tbody>
         </Table>
         <PaginatorWithChild
           pagesQuantity={pagesQuantity}
-          currentPage={ currentPage }
+          currentPage={currentPage}
           onPageChange={(page) => {
             setCurrentPage(page);
             pagination.onPageChange(page);

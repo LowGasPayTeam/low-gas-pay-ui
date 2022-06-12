@@ -187,7 +187,7 @@ const TransferSetting: React.FC<PropTypes> = ({
         </Button>
       </HStack>
       <HStack mb={2}>
-        <Text>使用充值 Gas Fee：</Text>
+        <Text>使用充值 Gas Fee</Text>
         <Switch
           checked={isRecharge} 
           onChange={onFeeModeChagne}
