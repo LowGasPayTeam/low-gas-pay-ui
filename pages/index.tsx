@@ -23,7 +23,8 @@ const Home: NextPage = () => {
   });
   
   const canPlaceOrder = useMemo(() => {
-    return records.length > 0;
+    const noEmpty = records.filter(r => !r.amount).length === 0;
+    return records.length > 0 && noEmpty;
   }, [records]);
 
   const handleSettingChange = (params: TransferSettings) => {
@@ -52,7 +53,6 @@ const Home: NextPage = () => {
     ]);
   }
   const handlePlaceOrder = async () => {
-    console.log(settings.current);
     const txn: Transaction[] = records.map(item => ({
       token_amount: item.amount,
       token_contract: TESTNET_TOKENS[settings.current.token],
@@ -76,7 +76,6 @@ const Home: NextPage = () => {
     
     try {
       const res = await createOrder(data);
-      console.log(res);
       setRecords([]);
       toast.success('订单提交成功！');
     } catch(err) {

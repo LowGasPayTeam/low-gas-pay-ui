@@ -12,7 +12,8 @@ import {
   Td,
   chakra,
   TableContainer,
-  TableCaption
+  TableCaption,
+  Tfoot
 } from "@chakra-ui/react";
 import { isAddress } from "ethers/lib/utils";
 import React, { PropsWithChildren, useMemo, useState } from "react";
@@ -37,8 +38,9 @@ const AddrList: React.FC<PropTypes> = ({
 
   const isValidAddr = useMemo(() => {
     const isEnsName = (/\w+(.eth)$/).test(newAddr);
-    return newAddr && (isAddress(newAddr) || isEnsName);
-  }, [newAddr])
+    const noRepeat = !(data.find(item => item.address === newAddr));
+    return newAddr && (isAddress(newAddr) || isEnsName) && noRepeat;
+  }, [newAddr, data])
   const handleAddrChange = (addr: string) => {
     setNewAddr(addr);
   }
@@ -61,6 +63,7 @@ const AddrList: React.FC<PropTypes> = ({
           value={newAddr}
           size="md"
           type="text"
+          focusBorderColor='gray.400'
           onChange={(e) => {
             handleAddrChange(e.target.value);
           }}
@@ -106,6 +109,7 @@ const AddrList: React.FC<PropTypes> = ({
                       size="sm"
                       type="number"
                       borderRadius='md'
+                      focusBorderColor='gray.400'
                       onChange={(e) =>
                         onAmountChange(index, e.target.value)
                       }
@@ -126,6 +130,14 @@ const AddrList: React.FC<PropTypes> = ({
               </Tr>
             ))}
           </Tbody>
+          { data.length > 0 && (
+            <Tfoot>
+              <Tr>
+                <Th>共计 { data.length } 接收地址</Th>
+                <Th>{} {currentToken}</Th>
+              </Tr>
+            </Tfoot>
+          )}
         </Table>
       </TableContainer>
     </VStack>

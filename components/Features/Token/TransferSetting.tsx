@@ -207,6 +207,7 @@ const TransferSetting: React.FC<PropTypes> = ({
           <Text mb={1} fontSize="sm" color='gray.700'>Gas Price(GWei)</Text>
           <Input
             borderRadius='lg'
+            focusBorderColor='gray.400'
             onChange={handleGasPriceChange}
             placeholder='Gas Price(GWei)'
           />
@@ -214,6 +215,7 @@ const TransferSetting: React.FC<PropTypes> = ({
         <Box w={160}>
           <Text mb={1} fontSize="sm" color='gray.700'>Gas Limit</Text>
           <Input
+            focusBorderColor='gray.400'
             borderRadius='lg'
             onChange={handleGasLimitChange}
             placeholder='Gas Limit'

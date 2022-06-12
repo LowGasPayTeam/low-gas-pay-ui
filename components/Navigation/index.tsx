@@ -174,7 +174,7 @@ const Navigation: FC = () => {
             overflow="hidden"
             bg='white'
           >
-            <HStack>
+            <HStack pl={2}>
               <Text minW={50}>
                 {Number(data?.formatted).toFixed(3)} {data?.symbol}
               </Text>
