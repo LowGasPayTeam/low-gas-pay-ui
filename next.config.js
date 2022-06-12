@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   async rewrites() { 
     return [ 
-      { source: '/api/:path*', destination: `http://47.242.89.124:9999/api/:path*` }, 
+      { source: '/api/:path*', destination: `https://metagas.app/api/:path*` }, 
 
     ]
   },

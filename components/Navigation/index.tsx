@@ -132,12 +132,11 @@ const Navigation: FC = () => {
   return (
     <Flex px={4} py={8} bg='gray.100'>
       <Box>
-        <Link href="/">
+        <Link href="/" passHref>
           <Image
             src={Logo}
             width={200}
             height={43}
-            quality={100}
             alt="metagas"
             layout="intrinsic"
             objectFit="contain"

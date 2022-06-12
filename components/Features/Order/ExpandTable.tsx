@@ -27,13 +27,16 @@ const PaginatorWithChild: FC<PropsWithChildren<PaginatorProps>> = Paginator;
 
 const TransferList: FC<{ data: any[]}> = ({ data }) => {
   const columns = useMemo(() => [
-    { Header: '接收地址', accessor: 'to' },
+    { Header: '接收地址', accessor: 'to_addr' },
     { 
       Header: '转账数量', 
+      id: 'token_amount',
       Cell: ({ row }: any) => (
-        <Text>
-          {row.original.amount}
-          {getTokenByContract(row.original.contract)}
+        <Text key={row.original.to_addr}>
+          {
+            row.original.token_amount + ' ' +
+            getTokenByContract(row.original.token_contract)
+          }
         </Text>
       ),
     },
@@ -67,7 +70,7 @@ const TransferList: FC<{ data: any[]}> = ({ data }) => {
       {rows.map((row) => {
         prepareRow(row)
         return (
-          <Tr>
+          <Tr {...row.getRowProps()}>
             {row.cells.map((cell) => (
               <Td {...cell.getCellProps()}>
                 {cell.render('Cell')}
@@ -123,21 +126,22 @@ const ExpandTable: FC<PropTypes> = ({ columns, data, pagination }) => {
           <Tbody {...getTableBodyProps()}>
             {(rows as Array<Row<any> & { isExpanded: boolean }>).map((row) => {
               prepareRow(row);
+              const { key } = row.getRowProps()
               return (
-                <>
-                  <Tr {...row.getRowProps()}>
+                <Fragment key={key}>
+                  <Tr>
                     {row.cells.map((cell) => (
                       <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>
                     ))}
                   </Tr>
                   {row.isExpanded ? (
                     <Tr>
-                      <Td colSpan={visibleColumns.length}>
+                      <Td colSpan={visibleColumns.length} key={row.original.order_id}>
                         <TransferList data={row.original.transactions} />
                       </Td>
                     </Tr>
                   ) : null}
-                </>
+                </Fragment>
               );
             })}
           </Tbody>

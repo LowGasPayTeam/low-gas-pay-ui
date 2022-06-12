@@ -63,7 +63,7 @@ const Home: NextPage = () => {
       status: '',
       to_addr: item.address
     }));
-  
+    
     const data = {
       order_create_addr: address || '',
       order_gas_type: 'ntom',

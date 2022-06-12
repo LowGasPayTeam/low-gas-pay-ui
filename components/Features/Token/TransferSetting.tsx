@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { formatEther } from "ethers/lib/utils";
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { TESTNET_TOKENS } from "../../../constants";
@@ -19,7 +19,8 @@ import { WalletStateType } from "../../../redux";
 import { TransferSettings } from "../../../typing";
 import { checkApproved, fetchBalance, signApprove } from "../../../utils";
 import TokenModal from "./TokenModal";
-
+import DatePicker from "react-datepicker";
+import { setHours, setMinutes } from "date-fns";
 interface PropTypes {
   onChange: (params: TransferSettings) => void;
   onOrder: () => void;
@@ -29,22 +30,22 @@ interface PropTypes {
 const TransferSetting: React.FC<PropTypes> = ({
   onChange,
   onOrder,
-  canPlaceOrder
+  canPlaceOrder,
 }) => {
-  const [selectedToken, setSelectedToken] = useState('ETH');
-  const [balance, setBalance] = useState('0');
+  const [selectedToken, setSelectedToken] = useState("ETH");
+  const [balance, setBalance] = useState("0");
   const [approved, setApproved] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [visible, setVisible] = useState(false);
   const [isRecharge, setIsRecharge] = useState(false);
-  const [gasPrice, SetGasPrice] = useState('');
-  const [gasLimit, SetGasLimit] = useState('');
+  const [gasPrice, SetGasPrice] = useState("");
+  const [gasLimit, SetGasLimit] = useState("");
   const [startDatetime, setStartDatetime] = useState(new Date());
   const [endDatetime, setEndDatetime] = useState(new Date());
   // from redux
-  const state = useSelector((state) => state );
+  const state = useSelector((state) => state);
   const { provider, address, signer } = state as WalletStateType;
-  
+
   // Modal 关闭与打开
   const openSelectModal = () => setVisible(true);
   const closeSelectModal = () => setVisible(false);
@@ -53,30 +54,32 @@ const TransferSetting: React.FC<PropTypes> = ({
   const handleChange = async (token: string, balance?: string) => {
     setSelectedToken(token);
     setVisible(false);
-  
+
     // 是否获取余额
-    if (balance === '' || balance === undefined) {
-      if (token === 'ETH') {
+    if (balance === "" || balance === undefined) {
+      if (token === "ETH") {
         balance = await provider?.getBalance(address);
         if (balance) {
           balance = Number(formatEther(balance)).toFixed(4);
         }
       }
-      balance = await fetchBalance(address || '', TESTNET_TOKENS[token], provider);
+      balance = await fetchBalance(
+        address || "",
+        TESTNET_TOKENS[token],
+        provider
+      );
     }
 
     // 是否已授权
-    if (token !== 'ETH') {
-      const allowance = await checkApproved(address || '', TESTNET_TOKENS[token], provider);
-      setApproved(allowance !== '0')
+    if (token !== "ETH") {
+      const allowance = await checkApproved(
+        address || "",
+        TESTNET_TOKENS[token],
+        provider
+      );
+      setApproved(allowance !== "0");
     }
-    setBalance(balance || '0');
-    onChange({
-      token: selectedToken,
-      orderGasType: '',
-      gasPrice,
-      gasLimit,
-    })
+    setBalance(balance || "0");
   };
 
   // 获取默认选择的余额
@@ -86,9 +89,9 @@ const TransferSetting: React.FC<PropTypes> = ({
       if (bal) {
         bal = Number(formatEther(bal)).toFixed(4);
       }
-      setBalance(bal || '0');
-    }
-    if (selectedToken === 'ETH') {
+      setBalance(bal || "0");
+    };
+    if (selectedToken === "ETH") {
       setApproved(true);
       fetchETHBalance();
     }
@@ -103,15 +106,16 @@ const TransferSetting: React.FC<PropTypes> = ({
   const handleApprove = async () => {
     setIsApproving(true);
     try {
-      const tx = await signApprove(address || '', TESTNET_TOKENS[selectedToken], signer);
-      await toast.promise(
-        tx.wait(),
-        {
-          pending: '授权已提交，正在等待确认...',
-          success: '授权成功 👌',
-          error: '授权失败 🤯'
-        }
-      )
+      const tx = await signApprove(
+        address || "",
+        TESTNET_TOKENS[selectedToken],
+        signer
+      );
+      await toast.promise(tx.wait(), {
+        pending: "授权已提交，正在等待确认...",
+        success: "授权成功 👌",
+        error: "授权失败 🤯",
+      });
       setApproved(true);
     } catch (err) {
       toast.error("授权失败！");
@@ -119,54 +123,47 @@ const TransferSetting: React.FC<PropTypes> = ({
     } finally {
       setIsApproving(false);
     }
-  }
+  };
 
   const handleGasPriceChange = (event: any) => {
     SetGasPrice(event.target.value);
-    onChange({
-      token: selectedToken,
-      orderGasType: '',
-      gasPrice,
-      gasLimit,
-    })
-  }
+  };
   const handleGasLimitChange = (event: any) => {
     SetGasLimit(event.target.value);
-    onChange({
-      token: selectedToken,
-      orderGasType: '',
-      gasPrice,
-      gasLimit,
-    })
-  }
+  };
 
   const handleDateChange = (type: string) => (date: any) => {
-    if (type === 'start') {
+    if (type === "start") {
       setStartDatetime(date);
+      console.log(date);
     }
-    if (type === 'end') {
+    if (type === "end") {
       setEndDatetime(date);
     }
+  };
 
+  useEffect(() => {
     onChange({
       token: selectedToken,
-      orderGasType: '',
+      orderGasType: "",
       gasPrice,
       gasLimit,
       startDatetime,
       endDatetime,
-    })
-  }
+    });
+  }, [endDatetime, gasLimit, gasPrice, onChange, selectedToken, startDatetime])
   return (
-    <Box w={400} borderWidth='1px' p={6} borderRadius="xl" bg='white'>
-      <HStack justify='space-between' mb={2}>
-        <Text fontSize='md'>转账的代币</Text>
-        <Text fontSize='xs' color="gray.600">余额: { balance }</Text>
+    <Box w={400} borderWidth="1px" p={6} borderRadius="xl" bg="white">
+      <HStack justify="space-between" mb={2}>
+        <Text fontSize="md">转账的代币</Text>
+        <Text fontSize="xs" color="gray.600">
+          余额: {balance}
+        </Text>
       </HStack>
-      <HStack justify='space-between' mb={6}>
+      <HStack justify="space-between" mb={6}>
         <Button
-          borderRadius='full'
-          variant='outline'
+          borderRadius="full"
+          variant="outline"
           minW={100}
           rightIcon={<ChevronDownIcon />}
           onClick={openSelectModal}
@@ -174,88 +171,109 @@ const TransferSetting: React.FC<PropTypes> = ({
           {selectedToken}
         </Button>
         <Button
-          colorScheme='brand'
+          colorScheme="brand"
           w={160}
           disabled={approved || isApproving}
           onClick={handleApprove}
         >
-          { isApproving ? (
-            <Spinner size='sm' />
-          ) : (
-              approved ? '已授权' : '授权'
-          )}
+          {isApproving ? <Spinner size="sm" /> : approved ? "已授权" : "授权"}
         </Button>
       </HStack>
       <HStack mb={2}>
         <Text>使用充值 Gas Fee</Text>
         <Switch
-          checked={isRecharge} 
+          checked={isRecharge}
           onChange={onFeeModeChagne}
-          colorScheme='brand'
+          colorScheme="brand"
         />
       </HStack>
       <HStack mb={6}>
-        <Button disabled w={120} variant='outline' colorScheme='brand'>
+        <Button disabled w={120} variant="outline" colorScheme="brand">
           充值
         </Button>
         <Spacer />
-        <Text fontSize='xs' color="gray.600">余额: { 0 }</Text>
+        <Text fontSize="xs" color="gray.600">
+          余额: {0}
+        </Text>
       </HStack>
-      <Text fontSize='md' mb={2}>GAS 设置</Text>
-      <HStack justify='space-between' mb={6}>
+      <Text fontSize="md" mb={2}>
+        GAS 设置
+      </Text>
+      <HStack justify="space-between" mb={6}>
         <Box w={160}>
-          <Text mb={1} fontSize="sm" color='gray.700'>Gas Price(GWei)</Text>
+          <Text mb={1} fontSize="sm" color="gray.700">
+            Gas Price(GWei)
+          </Text>
           <Input
-            borderRadius='lg'
-            focusBorderColor='gray.400'
+            borderRadius="lg"
+            focusBorderColor="gray.400"
             onChange={handleGasPriceChange}
-            placeholder='Gas Price(GWei)'
+            placeholder="Gas Price(GWei)"
           />
         </Box>
         <Box w={160}>
-          <Text mb={1} fontSize="sm" color='gray.700'>Gas Limit</Text>
+          <Text mb={1} fontSize="sm" color="gray.700">
+            Gas Limit
+          </Text>
           <Input
-            focusBorderColor='gray.400'
-            borderRadius='lg'
+            focusBorderColor="gray.400"
+            borderRadius="lg"
             onChange={handleGasLimitChange}
-            placeholder='Gas Limit'
+            placeholder="Gas Limit"
           />
         </Box>
       </HStack>
-      <Text fontSize='md' mb={2}>订单时效</Text>
+      <Text fontSize="md" mb={2}>
+        订单时效
+      </Text>
       <Box mb={2}>
-        <Text mb={1} fontSize="sm" color='gray.700'>起始时间</Text>
-        <SingleDatepicker
-          name="date-input"
-          date={startDatetime}
-          onDateChange={handleDateChange('start')}
+        <Text mb={1} fontSize="sm" color="gray.700">
+          起始时间
+        </Text>
+        <DatePicker
+          dateFormat="yyyy/MM/dd HH:mm"
+          timeFormat="HH:mm"
+          timeIntervals={15}
+          minDate={new Date()}
+          minTime={setHours(setMinutes(new Date(), 0), (new Date().getHours()))}
+          maxTime={setHours(setMinutes(new Date(), 59), 23)}
+          selected={startDatetime}
+          onChange={handleDateChange("start")}
+          showTimeSelect
+          customInput={<Input focusBorderColor="gray.400" />}
         />
       </Box>
       <Box mb={6}>
-        <Text mb={1} fontSize="sm" color='gray.700'>结束时间</Text>
-        <SingleDatepicker
-          name="date-input"
-          date={endDatetime}
-          onDateChange={handleDateChange('end')}
+        <Text mb={1} fontSize="sm" color="gray.700">
+          结束时间
+        </Text>
+        <DatePicker
+          selected={endDatetime}
+          dateFormat="yyyy/MM/dd HH:mm"
+          timeFormat="HH:mm"
+          minDate={startDatetime}
+          onChange={handleDateChange("end")}
+          showTimeSelect
+          customInput={<Input focusBorderColor="gray.400" />}
         />
       </Box>
       <Button
         size="md"
-        borderRadius='lg'
+        borderRadius="lg"
         disabled={!canPlaceOrder}
         css={{ width: "100%" }}
         onClick={onOrder}
-        colorScheme='brand'
+        colorScheme="brand"
       >
         确认转账
       </Button>
       <TokenModal
-        visible={visible} 
-        onChange={handleChange} 
+        visible={visible}
+        onChange={handleChange}
         onClose={closeSelectModal}
       />
     </Box>
-  )
-}
+  );
+};
 
 export default TransferSetting;

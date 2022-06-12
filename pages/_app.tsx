@@ -6,6 +6,8 @@ import Navigation from '../components/Navigation';
 import { ToastContainer } from 'react-toastify';
 import '../styles/globals.css'
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-datepicker/dist/react-datepicker.css';
+import "../styles/datepicker.css";
 import { ChakraProvider, extendTheme, type ThemeConfig } from '@chakra-ui/react'
 
 const client = createClient()
