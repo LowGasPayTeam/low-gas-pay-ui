@@ -45,20 +45,6 @@ export const signApprove = async (
 }
 
 /* 
-  检查对应的 NFT 是否 Approve
-*/
-export const checkNFTApproved = async (
-  wallet: string,
-  addr: string,
-  provider: ethers.providers.Provider
-) => {
-  if (!addr || !wallet) return;
-  const contract = new ethers.Contract(addr, erc721ABI, provider);
-  const res = await contract.functions.isApprovedForAll(wallet, LOW_GAS_PAY_CONTRACT);
-  return res.remaining.toString()
-}
-
-/* 
   对某个 Token 发起 Approve TX
 */
 export const signSetApproveForAll = async (
@@ -71,8 +57,62 @@ export const signSetApproveForAll = async (
   return await contract.functions.setApprovalForAll(LOW_GAS_PAY_CONTRACT, true);
 }
 
+/* 
+  检查对应的 NFT 是否 Approve
+*/
+export const checkNFTApproved = async (
+  wallet: string,
+  addr: string,
+  provider: ethers.providers.Provider
+) => {
+  if (!addr || !wallet) return;
+  const contract = new ethers.Contract(addr, erc721ABI, provider);
+  const res = await contract.functions.isApprovedForAll(wallet, LOW_GAS_PAY_CONTRACT);
+  return res.remaining.toString()
+}
+/*
+ * 对某个 Token 发起 Approve TX
+ *
+*/
+export const signNFTSetApproveForAll = async (
+  wallet: string,
+  addr: string,
+  signer: ethers.Signer
+) => {
+  if (!addr || !wallet) return;
+  const contract = new ethers.Contract(addr, erc721ABI, signer);
+  return await contract.functions.setApprovalForAll(LOW_GAS_PAY_CONTRACT, true);
+}
+
 /**
  * 
  */
 export const getTokenByContract = (contract: string) => 
   Object.keys(TESTNET_TOKENS).find((key => TESTNET_TOKENS[key] === contract));
+
+
+export const getMyTokenIdsByContractAndAddress = async (address: string, contract: string, provider: ethers.providers.Provider) => {
+  const ct = new ethers.Contract(contract, erc721ABI, provider);
+  return await ct.functions.tokensOfOwner(address);
+}
+
+export const getNameByContract = async (contract: string, provider: ethers.providers.Provider) => {
+  const ct = new ethers.Contract(contract, erc721ABI, provider);
+  return await ct.functions.name();
+}
+
+export const getMetaDataByContractAndID = async (id: string, contract: string, provider: ethers.providers.Provider) => {
+  const ct = new ethers.Contract(contract, erc721ABI, provider);
+  return await ct.functions.tokenURI();
+}
+
+export const getMyTokenByContract = async (address: string, contract: string, provider: ethers.providers.Provider) => {
+  try {
+    const ids = await getMyTokenIdsByContractAndAddress(address, contract, provider);
+    console.log(ids);
+    return Promise.resolve(ids);
+  } catch (err) {
+    console.log(err);
+    return Promise.resolve([]);
+  }
+}

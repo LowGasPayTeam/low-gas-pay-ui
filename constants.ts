@@ -17,3 +17,5 @@ export const MAINNET_TOKENS: Record<string, string> = {
 }
 
 export const LOW_GAS_PAY_CONTRACT = '0x5192D14aaD1602df4D8D63a1EDA515BEcBeA3424';
+
+export const TESTNET_NFTS = ['0xb74bf94049d2c01f8805b8b15db0909168cabf46']
