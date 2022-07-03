@@ -7,18 +7,12 @@ import {
   Switch,
   Text,
 } from "@chakra-ui/react";
-import { formatEther } from "ethers/lib/utils";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { TESTNET_TOKENS } from "../../../constants";
-import { WalletStateType } from "../../../redux";
-import { TransferSettings } from "../../../typing";
-import { checkApproved, fetchBalance, signApprove } from "../../../utils";
+import { NFTTransferSettings } from "../../../typing";
 import DatePicker from "react-datepicker";
 import { setHours, setMinutes } from "date-fns";
 interface PropTypes {
-  onChange: (params: TransferSettings) => void;
+  onChange: (params: NFTTransferSettings) => void;
   onOrder: () => void;
   canPlaceOrder: boolean;
 }
@@ -28,8 +22,6 @@ const TransferSetting: React.FC<PropTypes> = ({
   onOrder,
   canPlaceOrder,
 }) => {
-  const [selectedToken, setSelectedToken] = useState("ETH");
-  const [visible, setVisible] = useState(false);
   const [isRecharge, setIsRecharge] = useState(false);
   const [gasPrice, SetGasPrice] = useState("");
   const [gasLimit, SetGasLimit] = useState("");
@@ -60,14 +52,13 @@ const TransferSetting: React.FC<PropTypes> = ({
 
   useEffect(() => {
     onChange({
-      token: selectedToken,
       orderGasType: "",
       gasPrice,
       gasLimit,
       startDatetime,
       endDatetime,
     });
-  }, [endDatetime, gasLimit, gasPrice, onChange, selectedToken, startDatetime])
+  }, [endDatetime, gasLimit, gasPrice, onChange, startDatetime])
   return (
     <Box w={400} borderWidth="1px" p={6} borderRadius="xl" bg="white">
       <HStack mb={2}>

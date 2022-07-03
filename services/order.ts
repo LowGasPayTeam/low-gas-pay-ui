@@ -12,6 +12,8 @@ export interface Transaction {
 }
 
 export interface NFTTransaction {
+  collection_name: string;
+  token_name:      string;
   token_id:        string | number;
   token_contract:  string;
   from_addr:       string;

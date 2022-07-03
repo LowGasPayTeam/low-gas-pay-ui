@@ -12,6 +12,7 @@ export interface NFTToken {
   image_url: string;
   name: string;
   contract: string;
+  collection_name: string;
   id: number | string;
 }
 
@@ -59,6 +60,7 @@ export const getAllowedNFTS = async (address: string) => {
         name: asset.name,
         id: asset.id,
         contract: asset?.asset_contract?.address,
+        collection_name: asset?.asset_contract?.name,
       } as NFTToken)),
     } as NFTCollection;
   }).filter(item => !!item) as NFTCollection[];

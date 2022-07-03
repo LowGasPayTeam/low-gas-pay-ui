@@ -1,4 +1,5 @@
 import { TESTNET_TOKENS } from "./constants";
+import { NFTToken } from "./services/opensea";
 
 export type RECHARGE = 'RECHARGE';
 export type WITHHOLD = 'WITHHOLD';
@@ -29,5 +30,5 @@ export interface NFTTransferSettings {
 
 export interface TransferNFTRecord {
   address: string;
-  tokens: any[];
+  tokens: NFTToken[];
 }

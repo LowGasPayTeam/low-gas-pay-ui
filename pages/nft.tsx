@@ -1,20 +1,16 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { Button, Heading, Container, styled, useToast, Text, Box, HStack, Switch, Spacer } from '@chakra-ui/react'
+import { Container, HStack } from '@chakra-ui/react'
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import { daysToWeeks } from 'date-fns';
-import dayjs from 'dayjs';
 import { WalletStateType } from '../redux';
-import { TransferNFTRecord, TransferRecord, NFTTransferSettings } from '../typing';
+import { TransferNFTRecord, NFTTransferSettings } from '../typing';
 import ReceiveBox from '../components/Features/NFT/ReceiveBox';
 import NFTList from '../components/Features/NFT/NFTList';
 import TransferSetting from '../components/Features/NFT/TransferSetting';
 import { getAllowedNFTS, NFTCollection, NFTToken } from '../services/opensea';
 import { createNFTOrder, NFTTransaction } from '../services/order';
 import { toast } from 'react-toastify';
-
 
 const NFTMain: NextPage = () => {
   const settings = useRef<NFTTransferSettings>({
@@ -72,6 +68,8 @@ const NFTMain: NextPage = () => {
     const txn: NFTTransaction[] = records.reduce((txns, record) => {
       const txnByRecord = record.tokens.map(token => ({
         token_id: token.id.toString(),
+        token_name: token.name,
+        collection_name: token.collection_name,
         token_contract: token.contract,
         from_addr: address || '',
         gas_paid_amount: '',
