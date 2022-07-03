@@ -88,6 +88,11 @@ const NFTList: React.FC<PropTypes> = ({
     }
   };
 
+  const handleDragStart = (item: NFTToken) => (e: any) => {
+    e.dropEffect = 'linkMove';
+    e.dataTransfer.setData('application/json', JSON.stringify(item));
+  };
+
   useEffect(() => {
     batchCheckApproved(collections.map(r => r.contract));
     setCheckedItems([]);
@@ -137,6 +142,7 @@ const NFTList: React.FC<PropTypes> = ({
                 borderWidth={checkedMap[item.name] ? 2 : 0}
                 borderColor='green.400'
                 borderRadius='sm'
+                onDragStart={handleDragStart(item)}
               >
                 <Image
                   boxSize='56px'

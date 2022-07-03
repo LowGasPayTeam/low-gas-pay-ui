@@ -12,16 +12,17 @@ import {
   WrapItem,
 } from "@chakra-ui/react";
 import { isAddress } from "ethers/lib/utils";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { DragEvent, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { WalletStateType } from "../../../redux";
-import { TransferNFTRecord, TransferSettings } from "../../../typing";
+import { NFTToken } from "../../../services/opensea";
+import { TransferNFTRecord } from "../../../typing";
 
 interface PropTypes {
   data: TransferNFTRecord[];
   onRowAdd: (addr: string) => void;
   onRowDelete: (addr: string) => void;
   onNFTAdd: (addr: string) => void;
+  onNFTDrap: (addr: string, item: NFTToken) => void;
   hasChecked: boolean;
 }
 
@@ -37,13 +38,13 @@ const ReceiveBox: React.FC<PropTypes> = ({
   onRowAdd,
   onNFTAdd,
   onRowDelete,
+  onNFTDrap,
   hasChecked,
 }) => {
   // from redux
   const state = useSelector((state) => state);
-  const { provider, address, signer } = state as WalletStateType;
   const [newAddr, setNewAddr] = useState('');
-
+  const [activeAddr, setActiveAddr] = useState('');
   const isValidAddr = useMemo(() => {
     const isEnsName = (/\w+(.eth)$/).test(newAddr);
     const noRepeat = !(data.find(item => item.address === newAddr));
@@ -54,6 +55,33 @@ const ReceiveBox: React.FC<PropTypes> = ({
     setNewAddr(addr);
   }
 
+  const hanleDragEnter = (addr: string) => (e: DragEvent) => {
+    setActiveAddr(addr);
+  };
+
+  const hanleDragLeave = (addr: string) => (e: DragEvent) => {
+    if (activeAddr === addr) {
+      setActiveAddr('');
+    }
+  };
+  const hanleDragOver = (addr: string) => (e: DragEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    return false;
+  };
+  const hanleDragDrop = (addr: string) => (e: DragEvent) => {
+    e.stopPropagation();
+    if (activeAddr === addr) {
+      setActiveAddr('');
+    }
+    const data = e.dataTransfer.getData('application/json');
+    try {
+      const parsed = JSON.parse(data);
+      onNFTDrap(addr, parsed);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <ReceiveWrap>
       <VStack height="100%">
@@ -98,13 +126,17 @@ const ReceiveBox: React.FC<PropTypes> = ({
               mb={2}
               borderWidth="1px"
               borderRadius="xl"
-              bg="white"
+              bg={activeAddr === item.address ? "gray.300" : "white"}
+              onDragEnter={hanleDragEnter(item.address)}
+              onDragLeave={hanleDragLeave(item.address)}
+              onDragOver={hanleDragOver(item.address)}
+              onDrop={hanleDragDrop(item.address)}
             >
               <Text fontSize="sm" mb={2}>
                 接收地址：{item.address}
               </Text>
               <Divider mb={2} />
-              <Wrap minHeight={16}>
+              <Wrap minHeight={16} pointerEvents="none">
                 {item.tokens.length > 0 ? (
                   item.tokens.map((token) => (
                     <WrapItem
@@ -137,14 +169,20 @@ const ReceiveBox: React.FC<PropTypes> = ({
               <Divider mb={2} />
               <HStack w="full" justify="space-between">
                 <Button
+                  variant="ghost"
+                  colorScheme="red"
                   size="sm"
-                  disabled={!hasChecked}
                   onClick={() => onRowDelete(item.address)}
                 >
                   删除此接收地址
                 </Button>
                 <Text fontSize="sm">总计：{item.tokens.length}</Text>
-                <Button size="sm" disabled={!hasChecked} onClick={() => onNFTAdd(item.address)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={!hasChecked}
+                  onClick={() => onNFTAdd(item.address)}
+                >
                   添加所选 NFT
                 </Button>
               </HStack>

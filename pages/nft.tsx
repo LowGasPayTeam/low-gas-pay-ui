@@ -60,6 +60,18 @@ const NFTMain: NextPage = () => {
     setCheckedNFTs([]);
   }
 
+  const onNFTDrop = (addr: string, item: NFTToken) => {
+    setRecords(rd => rd.map(r => {
+      if (r.address === addr) {
+        const tokens = new Set([...r.tokens, item]);
+        r.tokens = Array.from(tokens);
+      }
+      return r;
+    }));
+    // 设置可选择的 NFT
+    setCheckedNFTs(data => data.filter(d => d.name !== item.name));
+  }
+
   const handleNFTChecked = (data: NFTToken[]) => {
     setCheckedNFTs([...data]);
   }
@@ -119,7 +131,9 @@ const NFTMain: NextPage = () => {
     setCollections(allMyCollections.map(col => {
       return {
         ...col,
-        tokens: col.tokens.filter(token => recordsNFTS.indexOf(token) < 0),
+        tokens: col.tokens.filter(
+          token => recordsNFTS.find(r => r.name === token.name) === undefined
+        ),
       }
     }));
   }, [allMyCollections, records]);
@@ -143,6 +157,7 @@ const NFTMain: NextPage = () => {
             onRowAdd={onRowAdd}
             onRowDelete={onRowDelete}
             onNFTAdd={onNFTAdd}
+            onNFTDrap={onNFTDrop}
             hasChecked={checkedNFTs.length > 0}
           />
           <NFTList
