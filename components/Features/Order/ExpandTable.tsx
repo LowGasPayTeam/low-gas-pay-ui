@@ -15,6 +15,7 @@ import { PaginatorProps } from "chakra-paginator/dist/components/Paginator";
 interface PropTypes {
   columns: any[];
   data: any[];
+  mode?: 'nft' | 'token';
   pagination: {
     total: number;
     onPageChange: (page: number, size?: number) => void;
@@ -25,8 +26,15 @@ interface PropTypes {
 
 const PaginatorWithChild: FC<PropsWithChildren<PaginatorProps>> = Paginator;
 
-const TransferList: FC<{ data: any[]}> = ({ data }) => {
-  const columns = useMemo(() => [
+const TransferList: FC<{ mode: 'nft' | 'token', data: any[]}> = ({ mode, data }) => {
+  const columns = useMemo(() => mode === 'nft' ? [
+    { Header: '接收地址', accessor: 'to_addr' },
+    { Header: 'NFT Name', accessor: 'collection_name'},
+    { Header: 'Token Name', accessor: 'token_name' },
+    { Header: 'Gas 使用数量', accessor: 'gas_paid_amount' },
+    { Header: 'Gas 使用状态', accessor: 'gas_paid_status' },
+    { Header: '已使用 Gas 数量', accessor: 'gas_used' },
+  ] : [
     { Header: '接收地址', accessor: 'to_addr' },
     { 
       Header: '转账数量', 
@@ -43,7 +51,7 @@ const TransferList: FC<{ data: any[]}> = ({ data }) => {
     { Header: 'Gas 使用数量', accessor: 'gas_paid_amount' },
     { Header: 'Gas 使用状态', accessor: 'gas_paid_status' },
     { Header: '已使用 Gas 数量', accessor: 'gas_used' },
-  ], []);
+  ], [mode]);
   const {
     getTableProps,
     getTableBodyProps,
@@ -83,7 +91,7 @@ const TransferList: FC<{ data: any[]}> = ({ data }) => {
   )
 }
 
-const ExpandTable: FC<PropTypes> = ({ columns, data, pagination }) => {
+const ExpandTable: FC<PropTypes> = ({ columns, data, pagination, mode }) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -137,7 +145,7 @@ const ExpandTable: FC<PropTypes> = ({ columns, data, pagination }) => {
                   {row.isExpanded ? (
                     <Tr>
                       <Td colSpan={visibleColumns.length} key={row.original.order_id}>
-                        <TransferList data={row.original.transactions} />
+                        <TransferList mode={mode ?? 'token'} data={row.original.transactions} />
                       </Td>
                     </Tr>
                   ) : null}

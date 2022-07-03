@@ -12,7 +12,7 @@ import {
   Divider,
   useRadioGroup,
 } from "@chakra-ui/react";
-import { BiHomeHeart, BiListUl  } from "react-icons/bi";
+import { BiHomeHeart, BiListUl, BiAlbum  } from "react-icons/bi";
 import { createWeb3Modal } from "../../utils/createWeb3Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { summaryAddress } from "../../utils";
@@ -152,9 +152,19 @@ const Navigation: FC = () => {
             {...getRadioProps({ value: "/" })}
           />
           <NavRadio
-            text="订单"
+            text="NFT"
+            icon={BiAlbum}
+            {...getRadioProps({ value: "/nft" })}
+          />
+          <NavRadio
+            text="代币订单"
             icon={BiListUl}
             {...getRadioProps({ value: "/order/token" })}
+          />
+          <NavRadio
+            text="NFT 订单"
+            icon={BiListUl}
+            {...getRadioProps({ value: "/order/nft" })}
           />
         </HStack>
         <HStack px={3} h={8}>

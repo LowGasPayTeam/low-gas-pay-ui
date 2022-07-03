@@ -45,20 +45,6 @@ export const signApprove = async (
 }
 
 /* 
-  检查对应的 NFT 是否 Approve
-*/
-export const checkNFTApproved = async (
-  wallet: string,
-  addr: string,
-  provider: ethers.providers.Provider
-) => {
-  if (!addr || !wallet) return;
-  const contract = new ethers.Contract(addr, erc721ABI, provider);
-  const res = await contract.functions.isApprovedForAll(wallet, LOW_GAS_PAY_CONTRACT);
-  return res.remaining.toString()
-}
-
-/* 
   对某个 Token 发起 Approve TX
 */
 export const signSetApproveForAll = async (
@@ -68,6 +54,33 @@ export const signSetApproveForAll = async (
 ) => {
   if (!addr || !wallet) return;
   const contract = new ethers.Contract(addr, erc20ABI, signer);
+  return await contract.functions.setApprovalForAll(LOW_GAS_PAY_CONTRACT, true);
+}
+
+/* 
+  检查对应的 NFT 是否 Approve
+*/
+export const checkNFTApproved = async (
+  wallet: string,
+  addr: string,
+  provider: ethers.providers.Provider
+) => {
+  if (!addr || !wallet) return;
+  const contract = new ethers.Contract(addr, erc721ABI, provider);
+  const [res] = await contract.functions.isApprovedForAll(wallet, LOW_GAS_PAY_CONTRACT);
+  return res
+}
+/*
+ * 对某个 Token 发起 Approve TX
+ *
+*/
+export const signNFTSetApproveForAll = async (
+  wallet: string,
+  addr: string,
+  signer: ethers.Signer
+) => {
+  if (!addr || !wallet) return;
+  const contract = new ethers.Contract(addr, erc721ABI, signer);
   return await contract.functions.setApprovalForAll(LOW_GAS_PAY_CONTRACT, true);
 }
 
