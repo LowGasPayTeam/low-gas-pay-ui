@@ -18,3 +18,16 @@ export interface TransferSettings {
   startDatetime?: Date;
   endDatetime?: Date;
 }
+
+export interface NFTTransferSettings {
+  orderGasType: string;
+  gasPrice?: string;
+  gasLimit?: string;
+  startDatetime?: Date;
+  endDatetime?: Date;
+}
+
+export interface TransferNFTRecord {
+  address: string;
+  tokens: any[];
+}

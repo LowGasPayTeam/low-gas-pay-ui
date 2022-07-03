@@ -3,8 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   async rewrites() { 
     return [ 
-      { source: '/api/:path*', destination: `https://metagas.app/api/:path*` }, 
-
+      { source: '/api/:path*', destination: `https://lowgaspay.com/api/:path*` }, 
     ]
   },
 }

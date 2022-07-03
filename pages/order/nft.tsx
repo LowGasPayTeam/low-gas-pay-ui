@@ -5,10 +5,9 @@ import ExpandTable from '../../components/Features/Order/ExpandTable';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { WalletStateType } from '../../redux';
-import { getTokenOrders } from '../../services/order';
+import { getNFTOrders } from '../../services/order';
 import { ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import StatusBadge from '../../components/StatusBadge';
-import { daysToWeeks } from 'date-fns';
 import dayjs from 'dayjs';
 
 const PAGE_NUMBER = 20;
@@ -17,7 +16,7 @@ const MainWrap = styled('div', {
   minHeight: 'calc(100vh - 72px)'
 });
 
-const Order: NextPage = () => {
+const NFTOrder: NextPage = () => {
   const [orders, updateOrders] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -105,7 +104,7 @@ const Order: NextPage = () => {
     const fetchOrders = async () => {
       if (!address) return;
       try{
-        const res = await getTokenOrders({ pageNumber: currentPage, address });
+        const res = await getNFTOrders({ pageNumber: currentPage, address });
         updateOrders(res.data.orders);
         setTotal(Math.ceil(res.data.total / PAGE_NUMBER));
       } catch (err) {
@@ -129,11 +128,12 @@ const Order: NextPage = () => {
       </Head>
       <Container maxW='8xl'>
         <Heading as='h4' size='md' mb={4}>
-          我的代币订单
+          我的 NFT 订单
         </Heading>
         <ExpandTable
           columns={columns}
           data={orders}
+          mode='nft'
           pagination={{
             onPageChange,
             size: PAGE_NUMBER,
@@ -145,4 +145,4 @@ const Order: NextPage = () => {
   )
 }
 
-export default Order
+export default NFTOrder
