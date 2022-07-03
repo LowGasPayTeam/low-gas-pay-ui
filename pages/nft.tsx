@@ -77,7 +77,9 @@ const NFTMain: NextPage = () => {
   }
 
   const handlePlaceOrder = async () => {
-    const txn: NFTTransaction[] = records.reduce((txns, record) => {
+    const txn: NFTTransaction[] = records.filter(
+      record => record.tokens.length
+    ).reduce((txns, record) => {
       const txnByRecord = record.tokens.map(token => ({
         token_id: token.id.toString(),
         token_name: token.name,
