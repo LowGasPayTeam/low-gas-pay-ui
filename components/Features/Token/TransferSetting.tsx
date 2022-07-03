@@ -32,7 +32,7 @@ const TransferSetting: React.FC<PropTypes> = ({
   onOrder,
   canPlaceOrder,
 }) => {
-  const [selectedToken, setSelectedToken] = useState("ETH");
+  const [selectedToken, setSelectedToken] = useState("WETH");
   const [balance, setBalance] = useState("0");
   const [approved, setApproved] = useState(false);
   const [isApproving, setIsApproving] = useState(false);

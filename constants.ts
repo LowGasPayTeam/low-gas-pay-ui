@@ -5,7 +5,7 @@ export const NETWORKING = {
 };
 
 export const TESTNET_TOKENS: Record<string, string> = {
-  'ETH': '',
+  'WETH': '0xDf032Bc4B9dC2782Bb09352007D4C57B75160B15',
   'DAI': '0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735',
   'USDT': '0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02',
 }
