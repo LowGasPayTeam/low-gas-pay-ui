@@ -107,7 +107,7 @@ const NFTMain: NextPage = () => {
     }
 
     try {
-      const res = await createNFTOrder(data);
+      await createNFTOrder(data);
       setRecords([]);
       toast.success('订单提交成功！');
     } catch(err) {

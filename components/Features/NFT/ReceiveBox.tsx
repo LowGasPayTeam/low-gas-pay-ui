@@ -67,6 +67,7 @@ const ReceiveBox: React.FC<PropTypes> = ({
   const hanleDragOver = (addr: string) => (e: DragEvent) => {
     e.stopPropagation();
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
     return false;
   };
   const hanleDragDrop = (addr: string) => (e: DragEvent) => {
@@ -126,7 +127,7 @@ const ReceiveBox: React.FC<PropTypes> = ({
               mb={2}
               borderWidth="1px"
               borderRadius="xl"
-              bg={activeAddr === item.address ? "gray.300" : "white"}
+              bg={activeAddr === item.address ? "gray.200" : "white"}
               onDragEnter={hanleDragEnter(item.address)}
               onDragLeave={hanleDragLeave(item.address)}
               onDragOver={hanleDragOver(item.address)}
@@ -135,7 +136,7 @@ const ReceiveBox: React.FC<PropTypes> = ({
               <Text fontSize="sm" mb={2}>
                 接收地址：{item.address}
               </Text>
-              <Divider mb={2} />
+              <Divider mb={2} pointerEvents="none" />
               <Wrap minHeight={16} pointerEvents="none">
                 {item.tokens.length > 0 ? (
                   item.tokens.map((token) => (
@@ -166,7 +167,7 @@ const ReceiveBox: React.FC<PropTypes> = ({
                   </Text>
                 )}
               </Wrap>
-              <Divider mb={2} />
+              <Divider mb={2} pointerEvents="none" />
               <HStack w="full" justify="space-between">
                 <Button
                   variant="ghost"

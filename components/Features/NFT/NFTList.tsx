@@ -52,6 +52,7 @@ const NFTList: React.FC<PropTypes> = ({
   const handleApprove = async (contract: string) => {
     if (!address) { return; }
     try {
+      setIsApproving(true);
       const tx = await signNFTSetApproveForAll(address, contract, signer);
       await toast.promise(tx.wait(), {
         pending: "授权已提交，正在等待确认...",

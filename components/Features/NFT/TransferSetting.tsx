@@ -13,7 +13,7 @@ import DatePicker from "react-datepicker";
 import { setHours, setMinutes } from "date-fns";
 interface PropTypes {
   onChange: (params: NFTTransferSettings) => void;
-  onOrder: () => void;
+  onOrder: () => void | Promise<void>;
   canPlaceOrder: boolean;
 }
 
@@ -27,6 +27,7 @@ const TransferSetting: React.FC<PropTypes> = ({
   const [gasLimit, SetGasLimit] = useState("");
   const [startDatetime, setStartDatetime] = useState(new Date());
   const [endDatetime, setEndDatetime] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
 
   // Gas 代扣模式变化
   const onFeeModeChagne = (e: any) => {
@@ -49,6 +50,16 @@ const TransferSetting: React.FC<PropTypes> = ({
       setEndDatetime(date);
     }
   };
+
+  const handleOrderClick = async () => {
+    try {
+      setIsLoading(true);
+      const fn = onOrder();
+      await Promise.resolve(fn);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
     onChange({
@@ -144,8 +155,9 @@ const TransferSetting: React.FC<PropTypes> = ({
         borderRadius="lg"
         disabled={!canPlaceOrder}
         css={{ width: "100%" }}
-        onClick={onOrder}
+        onClick={handleOrderClick}
         colorScheme="brand"
+        isLoading={isLoading}
       >
         确认转账
       </Button>
