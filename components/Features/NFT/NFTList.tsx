@@ -1,4 +1,3 @@
-import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -16,7 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { WalletStateType } from "../../../redux";
-import { getAllowedNFTS, NFTCollection, NFTToken } from "../../../services/opensea";
+import { NFTCollection, NFTToken } from "../../../services/opensea";
 import { checkNFTApproved, signNFTSetApproveForAll } from "../../../utils";
 interface PropTypes {
   collections: NFTCollection[];
@@ -30,9 +29,9 @@ const NFTList: React.FC<PropTypes> = ({
   // from redux
   const state = useSelector((state) => state);
   const { provider, address, signer } = state as WalletStateType;
-  const [checkStatus, setCheckStatus] = useState<Record<string, boolean>>({});
+  const [checkStatus, setCheckStatus] = useState<Record<string | number, boolean>>({});
   const [isApproving, setIsApproving] = useState<boolean>(false);
-  const [checkedMap, setCheckedMap] = useState<Record<string, boolean>>({});
+  const [checkedMap, setCheckedMap] = useState<Record<string | number, boolean>>({});
   const [checkedItems, setCheckedItems] = useState<NFTToken[]>([]);
   const batchCheckApproved = async (contracts: string[]) => {
     if (!address) {
@@ -72,17 +71,17 @@ const NFTList: React.FC<PropTypes> = ({
   }
 
   const handleNFTClick = (item: NFTToken) => {
-    if (checkedMap[item.name]) {
+    if (checkedMap[item.id]) {
       setCheckedMap(data => {
-        delete data[item.name];
+        delete data[item.id];
         return { ...data, }
       });
-      onNFTChecked([...checkedItems.filter(d => d.name !== item.name)]);
-      setCheckedItems(data => data.filter(d => d.name !== item.name));
+      onNFTChecked([...checkedItems.filter(d => d.id !== item.id)]);
+      setCheckedItems(data => data.filter(d => d.id !== item.id));
     } else {
       setCheckedMap(data => ({
         ...data,
-        [item.name]: true
+        [item.id]: true
       }));
       onNFTChecked([...checkedItems, item]);
       setCheckedItems(data => [...data, item]);
@@ -131,7 +130,7 @@ const NFTList: React.FC<PropTypes> = ({
           {collection.tokens.length ? (<Wrap>
             {collection.tokens.map(item => (
               <WrapItem
-                key={item.name}
+                key={item.id}
                 w={78}
                 h={78}
                 boxSizing='border-box'
@@ -140,7 +139,7 @@ const NFTList: React.FC<PropTypes> = ({
                 justifyContent='center'
                 onClick={() => handleNFTClick(item)}
                 cursor='pointer'
-                borderWidth={checkedMap[item.name] ? 2 : 0}
+                borderWidth={checkedMap[item.id] ? 2 : 0}
                 borderColor='green.400'
                 borderRadius='sm'
                 onDragStart={handleDragStart(item)}

@@ -1,3 +1,5 @@
+import { request } from "./base";
+
 export interface NFTCollection {
   contract: string;
   name: string;
@@ -35,9 +37,28 @@ export const getAssetsByContract = (address: string, nftContract: string) => {
     .then(response => response.json())
 };
 
-const ALLOWED_CONTRACTS = ['0xB74bf94049D2c01f8805B8b15Db0909168Cabf46'];
+const ALLOWED_CONTRACTS = [
+  '0xB74bf94049D2c01f8805B8b15Db0909168Cabf46',
+  '0xd56e9203b218087038adb14f725630d9908b9eb0'
+];
+
+export const getAllowedNFTList = async () => {
+  const res = await request({
+    url: `/nft/allowed`,
+    method: 'GET',
+  });
+  return res.json();
+}
 
 export const getAllowedNFTS = async (address: string) => {
+  let allowedNFTList = [];
+  try {
+    const res = await getAllowedNFTList();
+    allowedNFTList = res.data;
+  } catch (err) {
+    console.log(err);
+    allowedNFTList = ALLOWED_CONTRACTS;
+  }
   const allNFTs = await Promise.all(
     ALLOWED_CONTRACTS.map(
       contract => getAssetsByContract(address, contract)

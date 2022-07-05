@@ -141,7 +141,7 @@ const ReceiveBox: React.FC<PropTypes> = ({
                 {item.tokens.length > 0 ? (
                   item.tokens.map((token) => (
                     <WrapItem
-                      key={token.name}
+                      key={token.id}
                       w={70}
                       flexDirection="column"
                       alignItems="center"

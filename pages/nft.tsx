@@ -69,7 +69,7 @@ const NFTMain: NextPage = () => {
       return r;
     }));
     // 设置可选择的 NFT
-    setCheckedNFTs(data => data.filter(d => d.name !== item.name));
+    setCheckedNFTs(data => data.filter(d => d.id !== item.id));
   }
 
   const handleNFTChecked = (data: NFTToken[]) => {
@@ -134,7 +134,7 @@ const NFTMain: NextPage = () => {
       return {
         ...col,
         tokens: col.tokens.filter(
-          token => recordsNFTS.find(r => r.name === token.name) === undefined
+          token => recordsNFTS.find(r => r.id === token.id) === undefined
         ),
       }
     }));
