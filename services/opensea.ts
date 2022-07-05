@@ -44,7 +44,7 @@ const ALLOWED_CONTRACTS = [
 
 export const getAllowedNFTList = async () => {
   const res = await request({
-    url: `/nft/allowed`,
+    url: `/contracts`,
     method: 'GET',
   });
   return res.json();
