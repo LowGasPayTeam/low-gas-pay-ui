@@ -2,7 +2,7 @@ import { Badge } from "@chakra-ui/react";
 import { FC, useState } from "react";
 
 interface PropTypes {
-  type: 'Created' | 'Pending' | 'Failed' | 'Success'
+  type: 'Created' | 'Pending' | 'Failed' | 'Success' | 'Canceled'
   text?: string;
 }
 const StatusBadge: FC<PropTypes> = ({ type, text }) => {
@@ -19,6 +19,9 @@ const StatusBadge: FC<PropTypes> = ({ type, text }) => {
     case 'Success':
       text = text ?? 'Success'
       return <Badge colorScheme='green' borderRadius='2xl'>{text}</Badge>;
+    case 'Canceled':
+      text = text ?? 'Canceled'
+      return <Badge borderRadius='2xl'>{text}</Badge>;
     default:
       text = text ?? 'Default'
       return <Badge borderRadius='2xl'>Default</Badge>;

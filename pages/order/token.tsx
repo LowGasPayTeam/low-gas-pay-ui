@@ -130,9 +130,11 @@ const Order: NextPage = () => {
         Header: "操作",
         id: "action",
         Cell: ({ row }: any) => (
-          <Button colorScheme="pink" variant="ghost" size="sm" onClick={handleCancel(row.original.order_id)}>
-            取消订单
-          </Button>
+          (row?.original.order_status === 'Created' || row?.original.order_status === 'Pending') && (
+            <Button colorScheme="pink" variant="ghost" size="sm" onClick={handleCancel(row?.original.order_id)}>
+              取消订单
+            </Button>
+          )
         ),
       },
     ],
