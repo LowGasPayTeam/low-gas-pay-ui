@@ -136,8 +136,8 @@ export const delTokenOrder = async (orderId: string) => {
 export const cancelTokenOrder = async (orderId: string) => {
   const res = await request({
     url: `/tokens/${orderId}`,
-    method: 'PUT',
-    data: { order_status: 'Canceled' }
+    method: "PUT",
+    data: { action: "cancel_order" },
   });
   return res.json();
 }
@@ -207,8 +207,8 @@ export const delNFTOrder = async (orderId: string) => {
 export const cancelNFTOrder = async (orderId: string) => {
   const res = await request({
     url: `/nfts/${orderId}`,
-    method: 'PUT',
-    data: { order_status: 'Canceled' }
+    method: "PUT",
+    data: { action: "cancel_order" },
   });
   return res.json();
 }
