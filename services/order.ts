@@ -137,7 +137,7 @@ export const cancelTokenOrder = async (orderId: string) => {
   const res = await request({
     url: `/tokens/${orderId}`,
     method: 'PUT',
-    data: { order_status: 'Created' }
+    data: { order_status: 'Canceled' }
   });
   return res.json();
 }
@@ -208,7 +208,7 @@ export const cancelNFTOrder = async (orderId: string) => {
   const res = await request({
     url: `/nfts/${orderId}`,
     method: 'PUT',
-    data: { order_status: 'Created' }
+    data: { order_status: 'Canceled' }
   });
   return res.json();
 }

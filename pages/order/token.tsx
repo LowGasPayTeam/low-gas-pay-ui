@@ -2,10 +2,10 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { Button, Heading, Container, styled, useToast, Text } from '@chakra-ui/react'
 import ExpandTable from '../../components/Features/Order/ExpandTable';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { WalletStateType } from '../../redux';
-import { getTokenOrders } from '../../services/order';
+import { cancelTokenOrder, getTokenOrders } from '../../services/order';
 import { ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import StatusBadge from '../../components/StatusBadge';
 import { daysToWeeks } from 'date-fns';
@@ -24,8 +24,46 @@ const Order: NextPage = () => {
   const state = useSelector((state) => state );
   const { address } = state as WalletStateType;
   const toast = useToast();
+
+  const fetchOrders = useCallback(async () => {
+    if (!address) return;
+    try{
+      const res = await getTokenOrders({ pageNumber: currentPage, address });
+      updateOrders(res.data.orders);
+      setTotal(Math.ceil(res.data.total / PAGE_NUMBER));
+    } catch (err) {
+      toast({
+        title: `订单数据获取失败`,
+        status: 'error',
+        isClosable: true,
+        position: 'top'
+      })
+    }
+  }, [address, currentPage, toast]);
+
   const onPageChange = (page: number) => {
     setCurrentPage(page);
+  }
+
+  const handleCancel = (orderId: string) => async () => {
+    try {
+      await cancelTokenOrder(orderId);
+      fetchOrders();
+      toast({
+        title: `订单取消成功`,
+        status: 'success',
+        isClosable: true,
+        position: 'top'
+      });
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: `订单取消失败`,
+        status: 'error',
+        isClosable: true,
+        position: 'top'
+      });
+    }
   }
 
   const columns = useMemo(
@@ -92,33 +130,19 @@ const Order: NextPage = () => {
         Header: "操作",
         id: "action",
         Cell: ({ row }: any) => (
-          <Button colorScheme="pink" variant="ghost" size="sm">
+          <Button colorScheme="pink" variant="ghost" size="sm" onClick={handleCancel(row.original.order_id)}>
             取消订单
           </Button>
         ),
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      if (!address) return;
-      try{
-        const res = await getTokenOrders({ pageNumber: currentPage, address });
-        updateOrders(res.data.orders);
-        setTotal(Math.ceil(res.data.total / PAGE_NUMBER));
-      } catch (err) {
-        toast({
-          title: `订单数据获取失败`,
-          status: 'error',
-          isClosable: true,
-          position: 'top'
-        })
-      }
-    }
     fetchOrders();
-  }, [address, currentPage, toast])
+  }, [fetchOrders])
 
   return (
     <MainWrap>
